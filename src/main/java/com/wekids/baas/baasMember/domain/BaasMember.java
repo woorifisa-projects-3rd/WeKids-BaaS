@@ -34,7 +34,8 @@ public class BaasMember extends BaseTime {
     @Column(length = 20, nullable = false)
     private String phone;
 
-    @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, columnDefinition = "VARCHAR(255) DEFAULT 'ACTIVE'")
     private BaasMemberState state;
 
     private LocalDateTime inactiveDate;
