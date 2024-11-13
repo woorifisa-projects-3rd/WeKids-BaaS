@@ -1,7 +1,0 @@
-spring:
-  application:
-    name: WeKids-BaaS
-
-  profiles:
-    active: local
-
