@@ -2,7 +2,7 @@ package com.wekids.baas.account.domain;
 
 import com.wekids.baas.account.domain.enums.AccountState;
 import com.wekids.baas.account.domain.enums.AccountType;
-import com.wekids.baas.bank.domain.Bank;
+import com.wekids.baas.account.domain.enums.BankCode;
 import com.wekids.baas.bankMember.domain.BankMember;
 import com.wekids.baas.common.entity.BaseTime;
 import com.wekids.baas.product.domain.Product;
@@ -51,7 +51,7 @@ public class Account extends BaseTime {
     @JoinColumn(name = "bank_member_id", nullable = false)
     private BankMember bankMember;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "bank_code", nullable = false)
-    private Bank bank;
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private BankCode bankCode;
 }
