@@ -22,6 +22,7 @@ public class AccountTransaction extends BaseTime {
     @Column(nullable = false)
     private String title;
 
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private AccountTransactionType type;
 
@@ -40,6 +41,7 @@ public class AccountTransaction extends BaseTime {
     @Column(nullable = false)
     private LocalDateTime transactionDate;
 
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private CurrencyCode currencyCode;
 
