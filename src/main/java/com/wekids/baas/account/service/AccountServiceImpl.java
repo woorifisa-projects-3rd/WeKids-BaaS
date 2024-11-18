@@ -35,7 +35,7 @@ public class AccountServiceImpl implements AccountService {
 
         String accountNumber = createAccountNumber();
         String password = accountCreateRequest.getPassword();
-        LocalDateTime expireDate = LocalDateTime.MAX;
+        LocalDateTime expireDate = LocalDateTime.of(9999, 12, 31, 23, 59, 59);
 
         Account account = Account.of(accountNumber, password, expireDate, AccountState.ACTIVE, product, bankMember);
 
