@@ -3,14 +3,17 @@ package com.wekids.baas.baasMember.domain;
 import com.wekids.baas.baasMember.domain.enums.BaasMemberState;
 import com.wekids.baas.common.entity.BaseTime;
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.ToString;
+import lombok.*;
+import lombok.experimental.SuperBuilder;
 
 import java.time.LocalDateTime;
 
 @Entity
 @Getter
 @ToString
+@SuperBuilder
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class BaasMember extends BaseTime {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

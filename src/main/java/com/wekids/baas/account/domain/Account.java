@@ -1,14 +1,13 @@
 package com.wekids.baas.account.domain;
 
 import com.wekids.baas.account.domain.enums.AccountState;
-import com.wekids.baas.account.domain.enums.AccountType;
 import com.wekids.baas.account.domain.enums.BankCode;
 import com.wekids.baas.bankMember.domain.BankMember;
 import com.wekids.baas.common.entity.BaseTime;
 import com.wekids.baas.product.domain.Product;
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.ToString;
+import lombok.*;
+import lombok.experimental.SuperBuilder;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -16,6 +15,9 @@ import java.time.LocalDateTime;
 @Entity
 @Getter
 @ToString
+@SuperBuilder
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Account extends BaseTime {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -29,10 +31,6 @@ public class Account extends BaseTime {
 
     @Column(nullable = false)
     private String password;
-
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private AccountType type;
 
     @Column(nullable = false)
     private LocalDateTime expireDate;
@@ -54,4 +52,17 @@ public class Account extends BaseTime {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private BankCode bankCode;
+
+    public static Account of(String accountNumber, String password, LocalDateTime expireDate, AccountState state, Product product, BankMember bankMember) {
+        return Account.builder()
+                .accountNumber(accountNumber)
+                .balance(BigDecimal.ZERO)
+                .password(password)
+                .expireDate(expireDate)
+                .state(state)
+                .product(product)
+                .bankMember(bankMember)
+                .bankCode(BankCode.WOORI_BANK)
+                .build();
+    }
 }

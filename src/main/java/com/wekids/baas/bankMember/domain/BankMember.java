@@ -4,14 +4,17 @@ import com.wekids.baas.baasMember.domain.BaasMember;
 import com.wekids.baas.bankMember.domain.enums.BankMemberState;
 import com.wekids.baas.common.entity.BaseTime;
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.ToString;
+import lombok.*;
+import lombok.experimental.SuperBuilder;
 
 import java.time.LocalDate;
 
 @Entity
 @Getter
 @ToString
+@SuperBuilder
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class BankMember extends BaseTime {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
