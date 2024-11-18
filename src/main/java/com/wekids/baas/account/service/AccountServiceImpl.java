@@ -2,7 +2,6 @@ package com.wekids.baas.account.service;
 
 import com.wekids.baas.account.domain.Account;
 import com.wekids.baas.account.domain.enums.AccountState;
-import com.wekids.baas.product.domain.enums.ProductType;
 import com.wekids.baas.account.dto.request.AccountCreateRequest;
 import com.wekids.baas.account.dto.response.AccountCreateResponse;
 import com.wekids.baas.account.repository.AccountRepository;
