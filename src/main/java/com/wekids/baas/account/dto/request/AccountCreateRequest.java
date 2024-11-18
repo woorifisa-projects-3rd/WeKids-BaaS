@@ -1,12 +1,16 @@
 package com.wekids.baas.account.dto.request;
 
+import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
 import lombok.Getter;
 
 @Getter
 @Builder
 public class AccountCreateRequest {
-    Long bankMemberId;
-    Long productId;
-    String password;
+    @NotNull
+    private Long bankMemberId;
+    @NotNull
+    private Long productId;
+    @NotNull
+    private String password;
 }

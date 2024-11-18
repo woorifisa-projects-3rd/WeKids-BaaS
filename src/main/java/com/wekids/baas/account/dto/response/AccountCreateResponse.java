@@ -8,9 +8,9 @@ import java.time.LocalDateTime;
 @Getter
 @Builder
 public class AccountCreateResponse {
-    String accountNumber;
-    String type;
-    LocalDateTime expireDate;
+    private String accountNumber;
+    private String type;
+    private LocalDateTime expireDate;
 
     public static AccountCreateResponse of(String accountNumber, String type, LocalDateTime expireDate) {
         return AccountCreateResponse.builder()
