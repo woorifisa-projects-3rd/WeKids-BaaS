@@ -25,6 +25,12 @@ public class BankMemberServiceImpl implements BankMemberService{
     @Override
     @Transactional
     public BankMemberCreateResponse createBankMember(BankMemberCreateRequest bankMemberCreateRequest) {
+        boolean isNewBankMember = bankMemberRepository.findBankMemberByResidentRegistrationNumber(bankMemberCreateRequest.getResidentRegistrationNumber()).isEmpty();
+
+        if(!isNewBankMember) {
+            throw new BaasException(ErrorCode.BANK_MEMBER_DUPLICATED, "고객명: " + bankMemberCreateRequest.getName());
+        }
+
         BaasMember baasMember = getBaasMember(bankMemberCreateRequest.getBaasMemberId());
 
         BankMember bankMember = BankMember.createNewBankMember(bankMemberCreateRequest.getName(), bankMemberCreateRequest.getBirthday(), bankMemberCreateRequest.getResidentRegistrationNumber(), baasMember);
@@ -33,6 +39,7 @@ public class BankMemberServiceImpl implements BankMemberService{
 
         return BankMemberCreateResponse.of(savedBankMember.getId());
     }
+
 
     private BaasMember getBaasMember(Long baasMemberId) {
         return baasMemberRepository.findById(baasMemberId).orElseThrow(() -> new BaasException(ErrorCode.BAAS_MEMBER_NOT_FOUND, "BaaS 고객 아이디 : " + baasMemberId));
