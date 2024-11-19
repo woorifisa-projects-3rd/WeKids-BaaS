@@ -48,6 +48,7 @@ class BankMemberServiceTest {
         BaasMember baasMember = BaasMemberFixture.builder().build().baasMember();
         BankMember bankMember = BankMemberFixture.builder().build().bankMember();
 
+        when(bankMemberRepository.findBankMemberByResidentRegistrationNumber(residentRegistrationNumber)).thenReturn(Optional.empty());
         when(baasMemberRepository.findById(baasMemberId)).thenReturn(Optional.of(baasMember));
         when(bankMemberRepository.save(any(BankMember.class))).thenReturn(bankMember);
 
@@ -56,6 +57,7 @@ class BankMemberServiceTest {
         assertNotNull(bankMemberCreateResponse);
         assertEquals(bankMember.getId(), bankMemberCreateResponse.getBankMemberId());
 
+        verify(bankMemberRepository, times(1)).findBankMemberByResidentRegistrationNumber(residentRegistrationNumber);
         verify(baasMemberRepository, times(1)).findById(baasMemberId);
         verify(bankMemberRepository, times(1)).save(any(BankMember.class));
     }
@@ -74,6 +76,7 @@ class BankMemberServiceTest {
                 .baasMemberId(baasMemberId)
                 .build();
 
+        when(bankMemberRepository.findBankMemberByResidentRegistrationNumber(residentRegistrationNumber)).thenReturn(Optional.empty());
         when(baasMemberRepository.findById(baasMemberId)).thenReturn(Optional.empty());
 
         BaasException baasException = assertThrows(BaasException.class, () -> bankMemberService.createBankMember(bankMemberCreateRequest));
@@ -81,7 +84,34 @@ class BankMemberServiceTest {
         assertEquals(ErrorCode.BAAS_MEMBER_NOT_FOUND, baasException.getErrorCode());;
         assertTrue(baasException.getMessage().equals("BaaS 고객 아이디 : " + baasMemberId));
 
+        verify(bankMemberRepository, times(1)).findBankMemberByResidentRegistrationNumber(residentRegistrationNumber);
         verify(baasMemberRepository,times(1)).findById(baasMemberId);
+    }
+
+    @Test
+    void 이미_가입한_고객일_경우() {
+        String name = "조다은";
+        LocalDate birthday = LocalDate.of(2017, 3, 15);
+        String residentRegistrationNumber = "1703154123456";
+        Long baasMemberId = 1L;
+
+        BankMemberCreateRequest bankMemberCreateRequest = BankMemberCreateRequest.builder()
+                .name(name)
+                .birthday(birthday)
+                .residentRegistrationNumber(residentRegistrationNumber)
+                .baasMemberId(baasMemberId)
+                .build();
+
+        BankMember bankMember = BankMemberFixture.builder().build().bankMember();
+
+        when(bankMemberRepository.findBankMemberByResidentRegistrationNumber(residentRegistrationNumber)).thenReturn(Optional.of(bankMember));
+
+        BaasException baasException = assertThrows(BaasException.class, () -> bankMemberService.createBankMember(bankMemberCreateRequest));
+
+        assertEquals(ErrorCode.BANK_MEMBER_DUPLICATED, baasException.getErrorCode());
+        assertTrue(baasException.getMessage().equals("고객명: " + bankMemberCreateRequest.getName()));
+
+        verify(bankMemberRepository, times(1)).findBankMemberByResidentRegistrationNumber(residentRegistrationNumber);
     }
 
 }
