@@ -23,17 +23,7 @@ public class MemberAccountController {
 
     @GetMapping
     public ResponseEntity<List<MemberAccountGetResponse>> getMemberAccountList(@PathVariable Long baasMemberId, @PathVariable Long bankMemberId) {
-        MemberAccountGetResponse memberAccountGetResponse = MemberAccountGetResponse.builder()
-                .accountNumber("1111111111111")
-                .bankName(BankCode.WOORI_BANK.getName())
-                .balance(BigDecimal.valueOf(999999))
-                .state(AccountState.ACTIVE.name())
-                .bankMemberName("강현우")
-                .productName("우리 아이 행복 통장")
-                .productType(ProductType.CHECKING.name())
-                .build();
-
-        List<MemberAccountGetResponse> result = List.of(memberAccountGetResponse);
+        List<MemberAccountGetResponse> result = accountService.getMemberAccountList(baasMemberId, bankMemberId);
         return ResponseEntity.ok(result);
     }
 }
