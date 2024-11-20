@@ -6,6 +6,7 @@ import com.wekids.baas.accountTransaction.dto.request.TransactionGetRequest;
 import com.wekids.baas.accountTransaction.dto.request.TransferRequest;
 import com.wekids.baas.accountTransaction.dto.response.TransactionGetResponse;
 import com.wekids.baas.accountTransaction.service.AccountTransactionService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,13 +22,14 @@ public class AccountTransactionController {
     private final AccountTransactionService accountTransactionService;
 
     @PostMapping("/transactions")
-    public ResponseEntity<Void> transfer(@RequestBody TransferRequest transferRequest) {
+    public ResponseEntity<Void> transfer(@RequestBody @Valid TransferRequest transferRequest) {
+        accountTransactionService.transfer(transferRequest);
 
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
     @PostMapping("/getTransactions")
-    public ResponseEntity<List<TransactionGetResponse>> getTransactionList(@RequestBody TransactionGetRequest transactionGetRequest) {
+    public ResponseEntity<List<TransactionGetResponse>> getTransactionList(@RequestBody @Valid TransactionGetRequest transactionGetRequest) {
         TransactionGetResponse transactionGetResponse = TransactionGetResponse.builder()
                 .title("카카오페이")
                 .type(AccountTransactionType.DEPOSIT.name())
