@@ -45,7 +45,7 @@ public class CardServiceImpl implements CardService{
 
     private String createCardNumber() {
         StringBuilder cardNumber = new StringBuilder("515954");
-        long millis = System.currentTimeMillis() % 10_000_000_000L;
+        String millis = String.valueOf(System.currentTimeMillis()).substring(3, 13);
         cardNumber.append(millis);
 
         return cardNumber.toString();

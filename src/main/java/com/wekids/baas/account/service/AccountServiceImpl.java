@@ -56,7 +56,7 @@ public class AccountServiceImpl implements AccountService {
     private String createAccountNumber() {
         StringBuilder accountNumber = new StringBuilder("1002");
 
-        long millis = System.currentTimeMillis() % 1_000_000_000L;
+        String millis = String.valueOf(System.currentTimeMillis()).substring(4, 13);
         accountNumber.append(millis);
 
         return accountNumber.toString();
