@@ -8,4 +8,6 @@ import java.util.List;
 
 public interface AccountTransactionService {
     void transfer(TransferRequest transferRequest);
+
+    List<TransactionGetResponse> getTransactionList(TransactionGetRequest transactionGetRequest);
 }

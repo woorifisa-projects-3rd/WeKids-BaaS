@@ -6,7 +6,9 @@ import com.wekids.baas.account.repository.AccountRepository;
 import com.wekids.baas.accountTransaction.domain.AccountTransaction;
 import com.wekids.baas.accountTransaction.domain.enums.AccountTransactionType;
 import com.wekids.baas.accountTransaction.domain.enums.CurrencyCode;
+import com.wekids.baas.accountTransaction.dto.request.TransactionGetRequest;
 import com.wekids.baas.accountTransaction.dto.request.TransferRequest;
+import com.wekids.baas.accountTransaction.dto.response.TransactionGetResponse;
 import com.wekids.baas.accountTransaction.repository.AccountTransactionRepository;
 import com.wekids.baas.bankMember.domain.BankMember;
 import com.wekids.baas.exception.BaasException;
@@ -18,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
 @Transactional(readOnly = true)
@@ -49,6 +52,12 @@ public class AccountTransactionServiceImpl implements AccountTransactionService{
 
         accountTransactionRepository.save(senderTransaction);
         accountTransactionRepository.save(receiverTransaction);
+    }
+
+    @Override
+    public List<TransactionGetResponse> getTransactionList(TransactionGetRequest transactionGetRequest) {
+
+        return null;
     }
 
     private static void validateTransfer(Account senderAccount, Account receiverAccount, BigDecimal amount) {
