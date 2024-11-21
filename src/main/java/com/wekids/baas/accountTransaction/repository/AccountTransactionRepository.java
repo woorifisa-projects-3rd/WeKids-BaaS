@@ -14,10 +14,10 @@ public interface AccountTransactionRepository extends JpaRepository<AccountTrans
     @Query("select t from AccountTransaction t " +
             "where t.account.accountNumber = :accountNumber " +
             "and t.transactionDate between :start and :end " +
-            "and (:type = 'ALL' or t.type = :type)")
+            "and (:type is null or t.type = :type)")
     List<AccountTransaction> findAccountTransactionsByCondition(@Param("accountNumber") String accountNumber,
-                                                                @Param("start") LocalDateTime start,
-                                                                @Param("end") LocalDateTime end,
-                                                                @Param("type") AccountTransactionType type,
-                                                                Pageable pageable);
+                                                                 @Param("start") LocalDateTime start,
+                                                                 @Param("end") LocalDateTime end,
+                                                                 @Param("type") AccountTransactionType type,
+                                                                 Pageable pageable);
 }
