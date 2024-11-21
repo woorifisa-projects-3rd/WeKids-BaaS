@@ -50,6 +50,7 @@ public class AccountTransaction extends BaseTime {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "account_id", nullable = false)
+    @ToString.Exclude
     private Account account;
 
     public static AccountTransaction createNewAccountTransaction(String title, AccountTransactionType type, BigDecimal amount, BigDecimal balance, String sender, String receiver, LocalDateTime transactionDate, CurrencyCode currencyCode, Account account) {
