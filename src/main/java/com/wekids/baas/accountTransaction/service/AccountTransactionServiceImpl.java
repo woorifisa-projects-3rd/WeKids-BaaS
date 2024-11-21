@@ -6,6 +6,7 @@ import com.wekids.baas.account.repository.AccountRepository;
 import com.wekids.baas.accountTransaction.domain.AccountTransaction;
 import com.wekids.baas.accountTransaction.domain.enums.AccountTransactionType;
 import com.wekids.baas.accountTransaction.domain.enums.CurrencyCode;
+import com.wekids.baas.accountTransaction.dto.request.AccountTransactionRequestType;
 import com.wekids.baas.accountTransaction.dto.request.TransactionGetRequest;
 import com.wekids.baas.accountTransaction.dto.request.TransferRequest;
 import com.wekids.baas.accountTransaction.dto.response.TransactionGetResponse;
@@ -15,18 +16,20 @@ import com.wekids.baas.exception.BaasException;
 import com.wekids.baas.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 
 @Service
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
 @Slf4j
-public class AccountTransactionServiceImpl implements AccountTransactionService{
+public class AccountTransactionServiceImpl implements AccountTransactionService {
     private final AccountTransactionRepository accountTransactionRepository;
     private final AccountRepository accountRepository;
 
@@ -56,19 +59,50 @@ public class AccountTransactionServiceImpl implements AccountTransactionService{
 
     @Override
     public List<TransactionGetResponse> getTransactionList(TransactionGetRequest transactionGetRequest) {
+        String accountNumber = transactionGetRequest.getAccountNumber();
 
-        return null;
+        validateAccountNumber(accountNumber);
+
+        LocalDateTime start = LocalDateTime.of(transactionGetRequest.getStart(), LocalTime.MIN);
+        LocalDateTime end = LocalDateTime.of(transactionGetRequest.getEnd(), LocalTime.MAX);
+
+        validateDateCondition(start, end);
+
+        AccountTransactionType type = getType(transactionGetRequest.getType());
+
+        PageRequest pageRequest = PageRequest.of(transactionGetRequest.getPage(), transactionGetRequest.getSize());
+
+        List<AccountTransaction> accountTransactions = accountTransactionRepository.findAccountTransactionsByCondition(accountNumber, start, end, type, pageRequest);
+
+        return TransactionGetResponse.from(accountTransactions);
+    }
+
+    private static void validateDateCondition(LocalDateTime start, LocalDateTime end) {
+        if(start.isAfter(end)) throw new BaasException(ErrorCode.START_IS_AFTER_END, "시작날짜: " + start + " 끝날짜: " + end);
+    }
+
+    private void validateAccountNumber(String accountNumber) {
+        Account account = getAccount(accountNumber);
+
+        if(account.getState() == AccountState.INACTIVE) throw new BaasException(ErrorCode.ACCOUNT_INACTIVE, "계좌번호: " + accountNumber);
+    }
+
+    private static AccountTransactionType getType(AccountTransactionRequestType accountTransactionRequestType) {
+        return accountTransactionRequestType.equals(AccountTransactionRequestType.ALL) ? null : AccountTransactionType.valueOf(accountTransactionRequestType.name());
     }
 
     private static void validateTransfer(Account senderAccount, Account receiverAccount, BigDecimal amount) {
-        if(senderAccount.getBalance().compareTo(amount) < 0) throw new BaasException(ErrorCode.INSUFFICIENT_BALANCE, "잔액: " + senderAccount.getBalance());
-        if(senderAccount.getAccountNumber() == receiverAccount.getAccountNumber()) throw new BaasException(ErrorCode.SENDER_AND_RECEIVER_SAME, "보내는 분 계좌번호: " + senderAccount.getAccountNumber() + " 받는 분 계좌번호: " + receiverAccount.getAccountNumber());
+        if (senderAccount.getBalance().compareTo(amount) < 0)
+            throw new BaasException(ErrorCode.INSUFFICIENT_BALANCE, "잔액: " + senderAccount.getBalance());
+        if (senderAccount.getAccountNumber() == receiverAccount.getAccountNumber())
+            throw new BaasException(ErrorCode.SENDER_AND_RECEIVER_SAME, "보내는 분 계좌번호: " + senderAccount.getAccountNumber() + " 받는 분 계좌번호: " + receiverAccount.getAccountNumber());
     }
 
     private Account getAccount(String accountNumber) {
         Account account = accountRepository.findByAccountNumber(accountNumber).orElseThrow(() -> new BaasException(ErrorCode.ACCOUNT_NOT_FOUND, "계좌 번호: " + accountNumber));
 
-        if(account.getState() == AccountState.INACTIVE) throw new BaasException(ErrorCode.ACCOUNT_INACTIVE, "계좌 번호: " + accountNumber);
+        if (account.getState() == AccountState.INACTIVE)
+            throw new BaasException(ErrorCode.ACCOUNT_INACTIVE, "계좌 번호: " + accountNumber);
 
         return account;
     }
