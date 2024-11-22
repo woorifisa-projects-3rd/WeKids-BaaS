@@ -41,17 +41,24 @@ public class AccountTransactionServiceImpl implements AccountTransactionService{
 
         LocalDateTime now = LocalDateTime.now();
 
-        senderAccount.withdraw(amount);
-        AccountTransaction senderTransaction = AccountTransaction.createNewAccountTransaction(receiver.getName(), AccountTransactionType.WITHDRAW, amount.negate(), senderAccount.getBalance(), sender.getName(), receiver.getName(), now, CurrencyCode.KRW, senderAccount);
+        withdraw(senderAccount, amount, sender, receiver, now);
 
+        deposit(receiverAccount, amount, sender, receiver, now);
+    }
+
+    private void deposit(Account receiverAccount, BigDecimal amount, BankMember sender, BankMember receiver, LocalDateTime now) {
         receiverAccount.deposit(amount);
         AccountTransaction receiverTransaction = AccountTransaction.createNewAccountTransaction(sender.getName(), AccountTransactionType.DEPOSIT, amount, receiverAccount.getBalance(), sender.getName(), receiver.getName(), now, CurrencyCode.KRW, receiverAccount);
-
-        accountTransactionRepository.save(senderTransaction);
         accountTransactionRepository.save(receiverTransaction);
     }
 
-    private static void validateTransfer(Account senderAccount, Account receiverAccount, BigDecimal amount) {
+    private void withdraw(Account senderAccount, BigDecimal amount, BankMember sender, BankMember receiver, LocalDateTime now) {
+        senderAccount.withdraw(amount);
+        AccountTransaction senderTransaction = AccountTransaction.createNewAccountTransaction(receiver.getName(), AccountTransactionType.WITHDRAW, amount.negate(), senderAccount.getBalance(), sender.getName(), receiver.getName(), now, CurrencyCode.KRW, senderAccount);
+        accountTransactionRepository.save(senderTransaction);
+    }
+
+    private void validateTransfer(Account senderAccount, Account receiverAccount, BigDecimal amount) {
         if(senderAccount.getBalance().compareTo(amount) < 0) throw new BaasException(ErrorCode.INSUFFICIENT_BALANCE, "잔액: " + senderAccount.getBalance());
         if(senderAccount.getAccountNumber() == receiverAccount.getAccountNumber()) throw new BaasException(ErrorCode.SENDER_AND_RECEIVER_SAME, "보내는 분 계좌번호: " + senderAccount.getAccountNumber() + " 받는 분 계좌번호: " + receiverAccount.getAccountNumber());
     }
