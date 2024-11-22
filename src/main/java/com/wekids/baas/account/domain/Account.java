@@ -43,10 +43,12 @@ public class Account extends BaseTime {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "product_id", nullable = false)
+    @ToString.Exclude
     private Product product;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "bank_member_id", nullable = false)
+    @ToString.Exclude
     private BankMember bankMember;
 
     @Enumerated(EnumType.STRING)

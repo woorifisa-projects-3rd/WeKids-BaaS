@@ -36,4 +36,14 @@ public class BankMember extends BaseTime {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "baas_member_id", nullable = false)
     private BaasMember baasMember;
+
+    public static BankMember createNewBankMember(String name, LocalDate birthday, String residentRegistrationNumber, BaasMember baasMember) {
+        return BankMember.builder()
+                .name(name)
+                .birthday(birthday)
+                .residentRegistrationNumber(residentRegistrationNumber)
+                .state(BankMemberState.ACTIVE)
+                .baasMember(baasMember)
+                .build();
+    }
 }

@@ -1,7 +1,9 @@
 package com.wekids.baas.account.domain.enums;
 
 import lombok.AllArgsConstructor;
+import lombok.Getter;
 
+@Getter
 @AllArgsConstructor
 public enum BankCode {
     WOORI_BANK("020", "우리은행"),

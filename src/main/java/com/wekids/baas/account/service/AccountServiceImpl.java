@@ -4,6 +4,7 @@ import com.wekids.baas.account.domain.Account;
 import com.wekids.baas.account.domain.enums.AccountState;
 import com.wekids.baas.account.dto.request.AccountCreateRequest;
 import com.wekids.baas.account.dto.response.AccountCreateResponse;
+import com.wekids.baas.account.dto.response.MemberAccountGetResponse;
 import com.wekids.baas.account.repository.AccountRepository;
 import com.wekids.baas.bankMember.domain.BankMember;
 import com.wekids.baas.bankMember.repository.BankMemberRepository;
@@ -17,6 +18,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
 @Transactional(readOnly = true)
@@ -42,6 +44,13 @@ public class AccountServiceImpl implements AccountService {
         Account newAccount = accountRepository.save(account);
 
         return AccountCreateResponse.of(newAccount.getAccountNumber(), product.getType().name(), newAccount.getExpireDate());
+    }
+
+    @Override
+    public List<MemberAccountGetResponse> getMemberAccountList(Long baasMemberId, Long bankMemberId) {
+        List<Account> memberAccounts = accountRepository.findAccountsByBankMemberIdAndBaasMemberId(bankMemberId, baasMemberId);
+
+        return MemberAccountGetResponse.from(memberAccounts);
     }
 
     private String createAccountNumber() {
