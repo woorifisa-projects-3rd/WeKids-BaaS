@@ -29,7 +29,7 @@ class AccountTransactionRepositoryTest {
 
         PageRequest pageRequest = PageRequest.of(1, 5);
 
-        List<AccountTransaction> transactions = accountTransactionRepository.findAccountTransactionsByCondition("1002913023908", start, end, txType, pageRequest);
+        List<AccountTransaction> transactions = accountTransactionRepository.findAccountTransactionsByCondition("1002-913-023908", start, end, txType, pageRequest);
 
         System.out.println("transactions = " + transactions);
 
@@ -37,7 +37,7 @@ class AccountTransactionRepositoryTest {
     }
 
     @ParameterizedTest
-    @CsvSource({"2024, 11, 20, 2024, 11, 21, 3", "2024, 11, 20, 2024, 11, 24, 3"})
+    @CsvSource({"2024, 11, 20, 2024, 11, 21, 3", "2024, 11, 20, 2024, 11, 24, 5"})
     void findAccountTransactionByCondition_date_condition(int startYear, int startMonth, int startDay, int endYear, int endMonth, int endDay, int answer) {
         LocalDateTime start = LocalDateTime.of(LocalDate.of(startYear, startMonth, startDay), LocalTime.MIN);
         LocalDateTime end = LocalDateTime.of(LocalDate.of(endYear, endMonth, endDay), LocalTime.MAX);
@@ -45,7 +45,7 @@ class AccountTransactionRepositoryTest {
 
         PageRequest pageRequest = PageRequest.of(0, 5);
 
-        List<AccountTransaction> transactions = accountTransactionRepository.findAccountTransactionsByCondition("1002913023908", start, end, txType, pageRequest);
+        List<AccountTransaction> transactions = accountTransactionRepository.findAccountTransactionsByCondition("1002-913-023908", start, end, txType, pageRequest);
 
         System.out.println("transactions = " + transactions);
 
