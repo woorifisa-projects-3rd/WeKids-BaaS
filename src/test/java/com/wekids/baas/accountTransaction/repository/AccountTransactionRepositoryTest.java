@@ -21,15 +21,16 @@ class AccountTransactionRepositoryTest {
     AccountTransactionRepository accountTransactionRepository;
 
     @ParameterizedTest
-    @CsvSource({"ALL, 4", "DEPOSIT, 0", "WITHDRAW, 1"})
+    @CsvSource({"ALL, 5", "DEPOSIT, 2", "WITHDRAW, 3"})
     void findAccountTransactionByCondition(String type, int answer) {
+        String accountNumber = "1002-913-023909";
         LocalDateTime start = LocalDateTime.of(LocalDate.of(2024, 11, 1), LocalTime.MIN);
         LocalDateTime end = LocalDateTime.of(LocalDate.of(2024, 11, 30), LocalTime.MAX);
         AccountTransactionType txType = type.equals("ALL") ? null : AccountTransactionType.valueOf(type);
 
-        PageRequest pageRequest = PageRequest.of(1, 5);
+        PageRequest pageRequest = PageRequest.of(0, 5);
 
-        List<AccountTransaction> transactions = accountTransactionRepository.findAccountTransactionsByCondition("1002-913-023908", start, end, txType, pageRequest);
+        List<AccountTransaction> transactions = accountTransactionRepository.findAccountTransactionsByCondition(accountNumber, start, end, txType, pageRequest);
 
         System.out.println("transactions = " + transactions);
 
@@ -37,15 +38,16 @@ class AccountTransactionRepositoryTest {
     }
 
     @ParameterizedTest
-    @CsvSource({"2024, 11, 20, 2024, 11, 21, 3", "2024, 11, 20, 2024, 11, 24, 5"})
+    @CsvSource({"2024, 11, 20, 2024, 11, 21, 2", "2024, 11, 20, 2024, 11, 24, 3"})
     void findAccountTransactionByCondition_date_condition(int startYear, int startMonth, int startDay, int endYear, int endMonth, int endDay, int answer) {
+        String accountNumber = "1002-913-023909";
         LocalDateTime start = LocalDateTime.of(LocalDate.of(startYear, startMonth, startDay), LocalTime.MIN);
         LocalDateTime end = LocalDateTime.of(LocalDate.of(endYear, endMonth, endDay), LocalTime.MAX);
         AccountTransactionType txType = null;
 
         PageRequest pageRequest = PageRequest.of(0, 5);
 
-        List<AccountTransaction> transactions = accountTransactionRepository.findAccountTransactionsByCondition("1002-913-023908", start, end, txType, pageRequest);
+        List<AccountTransaction> transactions = accountTransactionRepository.findAccountTransactionsByCondition(accountNumber, start, end, txType, pageRequest);
 
         System.out.println("transactions = " + transactions);
 

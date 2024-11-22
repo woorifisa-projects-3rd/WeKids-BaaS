@@ -40,7 +40,7 @@ class AccountRepositoryTest {
     }
 
     @ParameterizedTest
-    @CsvSource({"5, 10, 2", "1, 10, 0", "1, 1, 1"})
+    @CsvSource({"5, 8, 2", "1, 10, 0", "1, 1, 1"})
     void findAccountsByBankMemberIdAndBaasMemberId(long baasMemberId, long bankMemberId, int answer) {
         List<Account> result = accountRepository.findAccountsByBankMemberIdAndBaasMemberId(bankMemberId, baasMemberId);
         System.out.println("result = " + result);

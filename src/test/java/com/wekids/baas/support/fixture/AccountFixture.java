@@ -14,7 +14,7 @@ import java.time.LocalDateTime;
 public class AccountFixture {
     private Long id;
     @Builder.Default
-    private String accountNumber = "1002123456789";
+    private String accountNumber = "1002-123-456789";
     @Builder.Default
     private BigDecimal balance = BigDecimal.ZERO;
     @Builder.Default
