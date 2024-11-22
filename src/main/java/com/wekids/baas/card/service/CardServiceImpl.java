@@ -2,6 +2,8 @@ package com.wekids.baas.card.service;
 
 import com.wekids.baas.account.domain.Account;
 import com.wekids.baas.account.repository.AccountRepository;
+import com.wekids.baas.bankMember.domain.BankMember;
+import com.wekids.baas.bankMember.repository.BankMemberRepository;
 import com.wekids.baas.card.domain.Card;
 import com.wekids.baas.card.dto.request.CardCreateRequest;
 import com.wekids.baas.card.dto.response.CardCreateResponse;
@@ -22,21 +24,27 @@ import java.time.LocalDate;
 public class CardServiceImpl implements CardService{
     private final CardRepository cardRepository;
     private final AccountRepository accountRepository;
+    private final BankMemberRepository bankMemberRepository;
 
     @Override
     @Transactional
     public CardCreateResponse createCard(CardCreateRequest cardCreateRequest) {
         Account account = getAccount(cardCreateRequest.getAccountNumber());
+        BankMember bankMember = getBankMember(cardCreateRequest.getBankMemberId());
 
         String cardNumber = createCardNumber();
         LocalDate validThru = LocalDate.now().plusYears(5);
         String cvc = createCvc();
 
-        Card card = Card.of(cardNumber, validThru, cvc, cardCreateRequest.getBankMemberName(), cardCreateRequest.getPassword(), account);
+        Card card = Card.of(cardNumber, validThru, cvc, bankMember.getName(), cardCreateRequest.getPassword(), account);
 
         Card savedCard = cardRepository.save(card);
 
         return CardCreateResponse.of(savedCard.getCardNumber(), savedCard.getValidThru(), savedCard.getCvc(), savedCard.getBankMemberName(), savedCard.getNewDate());
+    }
+
+    private BankMember getBankMember(Long bankMemberId) {
+        return bankMemberRepository.findById(bankMemberId).orElseThrow(() -> new BaasException(ErrorCode.BANK_MEMBER_NOT_FOUND, "은행 고객 아이디: " + bankMemberId));
     }
 
     private Account getAccount(String accountNumber) {
@@ -46,7 +54,7 @@ public class CardServiceImpl implements CardService{
     private String createCardNumber() {
         StringBuilder cardNumber = new StringBuilder("515954");
 
-        long millis = System.currentTimeMillis() % 10_000_000_000L;
+        String millis = String.valueOf(System.currentTimeMillis()).substring(3, 13);
         cardNumber.append(millis);
 
         cardNumber = cardNumber.insert(4, '-').insert(9, '-').insert(14, '-');
