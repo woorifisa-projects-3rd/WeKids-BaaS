@@ -59,6 +59,8 @@ public class AccountServiceImpl implements AccountService {
         long millis = System.currentTimeMillis() % 1_000_000_000L;
         accountNumber.append(millis);
 
+        accountNumber = accountNumber.insert(4, '-').insert(8, '-');
+
         return accountNumber.toString();
     }
 
