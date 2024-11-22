@@ -22,7 +22,7 @@ public class MemberAccountController {
     private final AccountService accountService;
 
     @GetMapping
-    public ResponseEntity<List<MemberAccountGetResponse>> getMemberAccountList(@PathVariable Long baasMemberId, @PathVariable Long bankMemberId) {
+    public ResponseEntity<List<MemberAccountGetResponse>> getMemberAccountList(@PathVariable("baasMemberId") Long baasMemberId, @PathVariable("bankMemberId") Long bankMemberId) {
         List<MemberAccountGetResponse> result = accountService.getMemberAccountList(baasMemberId, bankMemberId);
         return ResponseEntity.ok(result);
     }
