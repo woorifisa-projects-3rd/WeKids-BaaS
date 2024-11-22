@@ -55,13 +55,13 @@ public class Account extends BaseTime {
     @Column(nullable = false)
     private BankCode bankCode;
 
-    public static Account of(String accountNumber, String password, LocalDateTime expireDate, AccountState state, Product product, BankMember bankMember) {
+    public static Account createNewAccount(String accountNumber, String password, LocalDateTime expireDate, Product product, BankMember bankMember) {
         return Account.builder()
                 .accountNumber(accountNumber)
                 .balance(BigDecimal.ZERO)
                 .password(password)
                 .expireDate(expireDate)
-                .state(state)
+                .state(AccountState.ACTIVE)
                 .product(product)
                 .bankMember(bankMember)
                 .bankCode(BankCode.WOORI_BANK)

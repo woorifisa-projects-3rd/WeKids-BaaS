@@ -79,7 +79,7 @@ public class AccountTransactionServiceImpl implements AccountTransactionService{
     private void validateAccountNumber(String accountNumber) {
         Account account = getAccount(accountNumber);
 
-        if(account.getState() == AccountState.INACTIVE) throw new BaasException(ErrorCode.ACCOUNT_INACTIVE, "계좌번호: " + accountNumber);
+        if(account.getState() == AccountState.INACTIVE) throw new BaasException(ErrorCode.INACTIVE_ACCOUNT, "계좌번호: " + accountNumber);
     }
 
     private AccountTransactionType getType(AccountTransactionRequestType accountTransactionRequestType) {
@@ -97,7 +97,7 @@ public class AccountTransactionServiceImpl implements AccountTransactionService{
         Account account = accountRepository.findByAccountNumber(accountNumber).orElseThrow(() -> new BaasException(ErrorCode.ACCOUNT_NOT_FOUND, "계좌 번호: " + accountNumber));
 
         if (account.getState() == AccountState.INACTIVE)
-            throw new BaasException(ErrorCode.ACCOUNT_INACTIVE, "계좌 번호: " + accountNumber);
+            throw new BaasException(ErrorCode.INACTIVE_ACCOUNT, "계좌 번호: " + accountNumber);
 
         return account;
     }

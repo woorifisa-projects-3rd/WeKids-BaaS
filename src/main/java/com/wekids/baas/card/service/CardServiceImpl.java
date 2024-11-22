@@ -36,7 +36,7 @@ public class CardServiceImpl implements CardService{
         LocalDate validThru = LocalDate.now().plusYears(5);
         String cvc = createCvc();
 
-        Card card = Card.of(cardNumber, validThru, cvc, bankMember.getName(), cardCreateRequest.getPassword(), account);
+        Card card = Card.createNewCard(cardNumber, validThru, cvc, bankMember.getName(), cardCreateRequest.getPassword(), account);
 
         Card savedCard = cardRepository.save(card);
 
@@ -63,7 +63,6 @@ public class CardServiceImpl implements CardService{
     }
 
     private String createCvc() {
-        long cvc = System.currentTimeMillis() % 1000L;
-        return String.valueOf(cvc);
+        return String.valueOf(System.currentTimeMillis()).substring(10, 13);
     }
 }

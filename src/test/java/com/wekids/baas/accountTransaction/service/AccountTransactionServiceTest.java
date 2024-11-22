@@ -141,7 +141,7 @@ class AccountTransactionServiceTest {
             when(accountRepository.findByAccountNumber(receiverAccountNumber)).thenReturn(Optional.of(receiverAccount));
 
             BaasException exception = assertThrows(BaasException.class, () -> accountTransactionService.transfer(transferRequest));
-            assertEquals(ErrorCode.ACCOUNT_INACTIVE, exception.getErrorCode());
+            assertEquals(ErrorCode.INACTIVE_ACCOUNT, exception.getErrorCode());
             verify(accountTransactionRepository, never()).save(any(AccountTransaction.class));
         }
     }
@@ -242,7 +242,7 @@ class AccountTransactionServiceTest {
 
             BaasException baasException = assertThrows(BaasException.class, () -> accountTransactionService.getTransactionList(transactionGetRequest));
 
-            assertEquals(ErrorCode.ACCOUNT_INACTIVE, baasException.getErrorCode());
+            assertEquals(ErrorCode.INACTIVE_ACCOUNT, baasException.getErrorCode());
             assertTrue(baasException.getMessage().equals("계좌 번호: " + accountNumber));
 
             verify(accountRepository, times(1)).findByAccountNumber(accountNumber);

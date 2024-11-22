@@ -48,7 +48,7 @@ public class Card extends BaseTime {
     @JoinColumn(name = "account_id", nullable = false)
     private Account account;
 
-    public static Card of(String cardNumber, LocalDate validThru, String cvc, String bankMemberName, String password, Account account) {
+    public static Card createNewCard(String cardNumber, LocalDate validThru, String cvc, String bankMemberName, String password, Account account) {
         return Card.builder()
                 .cardNumber(cardNumber)
                 .validThru(validThru)
