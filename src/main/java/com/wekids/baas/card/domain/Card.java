@@ -4,8 +4,8 @@ import com.wekids.baas.account.domain.Account;
 import com.wekids.baas.card.domain.enums.CardState;
 import com.wekids.baas.common.entity.BaseTime;
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.ToString;
+import lombok.*;
+import lombok.experimental.SuperBuilder;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -13,6 +13,9 @@ import java.time.LocalDateTime;
 @Entity
 @Getter
 @ToString
+@SuperBuilder
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Card extends BaseTime {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -44,4 +47,17 @@ public class Card extends BaseTime {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "account_id", nullable = false)
     private Account account;
+
+    public static Card of(String cardNumber, LocalDate validThru, String cvc, String bankMemberName, String password, Account account) {
+        return Card.builder()
+                .cardNumber(cardNumber)
+                .validThru(validThru)
+                .cvc(cvc)
+                .bankMemberName(bankMemberName)
+                .state(CardState.ACTIVE)
+                .password(password)
+                .newDate(LocalDateTime.now())
+                .account(account)
+                .build();
+    }
 }
