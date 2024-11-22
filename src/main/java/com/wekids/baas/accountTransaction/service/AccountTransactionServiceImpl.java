@@ -29,7 +29,7 @@ import java.util.List;
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
 @Slf4j
-public class AccountTransactionServiceImpl implements AccountTransactionService {
+public class AccountTransactionServiceImpl implements AccountTransactionService{
     private final AccountTransactionRepository accountTransactionRepository;
     private final AccountRepository accountRepository;
 
@@ -47,14 +47,9 @@ public class AccountTransactionServiceImpl implements AccountTransactionService 
 
         LocalDateTime now = LocalDateTime.now();
 
-        senderAccount.withdraw(amount);
-        AccountTransaction senderTransaction = AccountTransaction.createNewAccountTransaction(receiver.getName(), AccountTransactionType.WITHDRAW, amount.negate(), senderAccount.getBalance(), sender.getName(), receiver.getName(), now, CurrencyCode.KRW, senderAccount);
+        withdraw(senderAccount, amount, sender, receiver, now);
 
-        receiverAccount.deposit(amount);
-        AccountTransaction receiverTransaction = AccountTransaction.createNewAccountTransaction(sender.getName(), AccountTransactionType.DEPOSIT, amount, receiverAccount.getBalance(), sender.getName(), receiver.getName(), now, CurrencyCode.KRW, receiverAccount);
-
-        accountTransactionRepository.save(senderTransaction);
-        accountTransactionRepository.save(receiverTransaction);
+        deposit(receiverAccount, amount, sender, receiver, now);
     }
 
     @Override
@@ -77,7 +72,7 @@ public class AccountTransactionServiceImpl implements AccountTransactionService 
         return TransactionGetResponse.from(accountTransactions);
     }
 
-    private static void validateDateCondition(LocalDateTime start, LocalDateTime end) {
+    private void validateDateCondition(LocalDateTime start, LocalDateTime end) {
         if(start.isAfter(end)) throw new BaasException(ErrorCode.START_IS_AFTER_END, "시작날짜: " + start + " 끝날짜: " + end);
     }
 
@@ -87,11 +82,11 @@ public class AccountTransactionServiceImpl implements AccountTransactionService 
         if(account.getState() == AccountState.INACTIVE) throw new BaasException(ErrorCode.ACCOUNT_INACTIVE, "계좌번호: " + accountNumber);
     }
 
-    private static AccountTransactionType getType(AccountTransactionRequestType accountTransactionRequestType) {
+    private AccountTransactionType getType(AccountTransactionRequestType accountTransactionRequestType) {
         return accountTransactionRequestType.equals(AccountTransactionRequestType.ALL) ? null : AccountTransactionType.valueOf(accountTransactionRequestType.name());
     }
 
-    private static void validateTransfer(Account senderAccount, Account receiverAccount, BigDecimal amount) {
+    private void validateTransfer(Account senderAccount, Account receiverAccount, BigDecimal amount) {
         if (senderAccount.getBalance().compareTo(amount) < 0)
             throw new BaasException(ErrorCode.INSUFFICIENT_BALANCE, "잔액: " + senderAccount.getBalance());
         if (senderAccount.getAccountNumber() == receiverAccount.getAccountNumber())
@@ -105,5 +100,17 @@ public class AccountTransactionServiceImpl implements AccountTransactionService 
             throw new BaasException(ErrorCode.ACCOUNT_INACTIVE, "계좌 번호: " + accountNumber);
 
         return account;
+    }
+
+    private void deposit(Account receiverAccount, BigDecimal amount, BankMember sender, BankMember receiver, LocalDateTime now) {
+        receiverAccount.deposit(amount);
+        AccountTransaction receiverTransaction = AccountTransaction.createNewAccountTransaction(sender.getName(), AccountTransactionType.DEPOSIT, amount, receiverAccount.getBalance(), sender.getName(), receiver.getName(), now, CurrencyCode.KRW, receiverAccount);
+        accountTransactionRepository.save(receiverTransaction);
+    }
+
+    private void withdraw(Account senderAccount, BigDecimal amount, BankMember sender, BankMember receiver, LocalDateTime now) {
+        senderAccount.withdraw(amount);
+        AccountTransaction senderTransaction = AccountTransaction.createNewAccountTransaction(receiver.getName(), AccountTransactionType.WITHDRAW, amount.negate(), senderAccount.getBalance(), sender.getName(), receiver.getName(), now, CurrencyCode.KRW, senderAccount);
+        accountTransactionRepository.save(senderTransaction);
     }
 }

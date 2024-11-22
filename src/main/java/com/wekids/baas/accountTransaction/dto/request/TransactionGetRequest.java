@@ -12,7 +12,7 @@ import java.time.LocalDate;
 @NoArgsConstructor
 public class TransactionGetRequest {
     @NotBlank
-    @Size(min = 13, max = 13)
+    @Size(min = 15, max = 15)
     private String accountNumber;
     @PastOrPresent
 
