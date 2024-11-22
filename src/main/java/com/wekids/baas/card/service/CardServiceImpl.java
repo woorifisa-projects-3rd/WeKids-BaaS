@@ -45,8 +45,11 @@ public class CardServiceImpl implements CardService{
 
     private String createCardNumber() {
         StringBuilder cardNumber = new StringBuilder("515954");
+
         long millis = System.currentTimeMillis() % 10_000_000_000L;
         cardNumber.append(millis);
+
+        cardNumber = cardNumber.insert(4, '-').insert(9, '-').insert(14, '-');
 
         return cardNumber.toString();
     }
