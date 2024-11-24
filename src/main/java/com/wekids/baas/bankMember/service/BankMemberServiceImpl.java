@@ -13,6 +13,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Optional;
+
 @Service
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
@@ -37,10 +39,12 @@ public class BankMemberServiceImpl implements BankMemberService{
     }
 
     private void validateNewBankMember(BankMemberCreateRequest bankMemberCreateRequest) {
-        boolean isNewBankMember = bankMemberRepository.findBankMemberByResidentRegistrationNumber(bankMemberCreateRequest.getResidentRegistrationNumber()).isEmpty();
+        Optional<BankMember> bankMember = bankMemberRepository.findBankMemberByResidentRegistrationNumber(bankMemberCreateRequest.getResidentRegistrationNumber());
+
+        boolean isNewBankMember = bankMember.isEmpty();
 
         if(!isNewBankMember) {
-            throw new BaasException(ErrorCode.BANK_MEMBER_DUPLICATED, "고객명: " + bankMemberCreateRequest.getName());
+            throw new BaasException(ErrorCode.BANK_MEMBER_DUPLICATED, "생성 요청된 고객명: " + bankMemberCreateRequest.getName() + ", 조회된 고객명: " + bankMember.get().getName());
         }
     }
 

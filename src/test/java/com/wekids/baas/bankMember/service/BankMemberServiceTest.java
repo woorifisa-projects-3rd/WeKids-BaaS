@@ -109,7 +109,7 @@ class BankMemberServiceTest {
         BaasException baasException = assertThrows(BaasException.class, () -> bankMemberService.createBankMember(bankMemberCreateRequest));
 
         assertEquals(ErrorCode.BANK_MEMBER_DUPLICATED, baasException.getErrorCode());
-        assertTrue(baasException.getMessage().equals("고객명: " + bankMemberCreateRequest.getName()));
+        assertTrue(baasException.getMessage().equals("생성 요청된 고객명: " + bankMemberCreateRequest.getName() + ", 조회된 고객명: " + bankMember.getName()));
 
         verify(bankMemberRepository, times(1)).findBankMemberByResidentRegistrationNumber(residentRegistrationNumber);
     }
