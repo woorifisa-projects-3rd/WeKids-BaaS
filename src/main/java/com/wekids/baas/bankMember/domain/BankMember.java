@@ -30,8 +30,9 @@ public class BankMember extends BaseTime {
     private String residentRegistrationNumber;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false, columnDefinition = "VARCHAR(255) DEFAULT 'ACTIVE'")
-    private BankMemberState state;
+    @Column(nullable = false)
+    @Builder.Default
+    private BankMemberState state = BankMemberState.ACTIVE;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "baas_member_id", nullable = false)
@@ -42,7 +43,6 @@ public class BankMember extends BaseTime {
                 .name(name)
                 .birthday(birthday)
                 .residentRegistrationNumber(residentRegistrationNumber)
-                .state(BankMemberState.ACTIVE)
                 .baasMember(baasMember)
                 .build();
     }

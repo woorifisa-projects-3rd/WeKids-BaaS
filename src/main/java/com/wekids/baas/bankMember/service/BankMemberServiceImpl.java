@@ -13,6 +13,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Optional;
+
 @Service
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
@@ -25,6 +27,8 @@ public class BankMemberServiceImpl implements BankMemberService{
     @Override
     @Transactional
     public BankMemberCreateResponse createBankMember(BankMemberCreateRequest bankMemberCreateRequest) {
+        validateNewBankMember(bankMemberCreateRequest);
+
         BaasMember baasMember = getBaasMember(bankMemberCreateRequest.getBaasMemberId());
 
         BankMember bankMember = BankMember.createNewBankMember(bankMemberCreateRequest.getName(), bankMemberCreateRequest.getBirthday(), bankMemberCreateRequest.getResidentRegistrationNumber(), baasMember);
@@ -33,6 +37,17 @@ public class BankMemberServiceImpl implements BankMemberService{
 
         return BankMemberCreateResponse.of(savedBankMember.getId());
     }
+
+    private void validateNewBankMember(BankMemberCreateRequest bankMemberCreateRequest) {
+        Optional<BankMember> bankMember = bankMemberRepository.findBankMemberByResidentRegistrationNumber(bankMemberCreateRequest.getResidentRegistrationNumber());
+
+        boolean isNewBankMember = bankMember.isEmpty();
+
+        if(!isNewBankMember) {
+            throw new BaasException(ErrorCode.BANK_MEMBER_DUPLICATED, "생성 요청된 고객명: " + bankMemberCreateRequest.getName() + ", 조회된 고객명: " + bankMember.get().getName());
+        }
+    }
+
 
     private BaasMember getBaasMember(Long baasMemberId) {
         return baasMemberRepository.findById(baasMemberId).orElseThrow(() -> new BaasException(ErrorCode.BAAS_MEMBER_NOT_FOUND, "BaaS 고객 아이디 : " + baasMemberId));

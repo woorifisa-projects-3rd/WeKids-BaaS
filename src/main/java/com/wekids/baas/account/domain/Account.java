@@ -27,7 +27,8 @@ public class Account extends BaseTime {
     private String accountNumber;
 
     @Column(precision = 20, scale = 2)
-    private BigDecimal balance;
+    @Builder.Default
+    private BigDecimal balance = BigDecimal.ZERO;
 
     @Column(nullable = false)
     private String password;
@@ -39,7 +40,8 @@ public class Account extends BaseTime {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private AccountState state;
+    @Builder.Default
+    private AccountState state = AccountState.ACTIVE;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "product_id", nullable = false)
@@ -53,18 +55,24 @@ public class Account extends BaseTime {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private BankCode bankCode;
+    @Builder.Default
+    private BankCode bankCode = BankCode.WOORI_BANK;
 
-    public static Account of(String accountNumber, String password, LocalDateTime expireDate, AccountState state, Product product, BankMember bankMember) {
+    public static Account createNewAccount(String accountNumber, String password, LocalDateTime expireDate, Product product, BankMember bankMember) {
         return Account.builder()
                 .accountNumber(accountNumber)
-                .balance(BigDecimal.ZERO)
                 .password(password)
                 .expireDate(expireDate)
-                .state(state)
                 .product(product)
                 .bankMember(bankMember)
-                .bankCode(BankCode.WOORI_BANK)
                 .build();
+    }
+
+    public void deposit(BigDecimal amount) {
+        this.balance = this.balance.add(amount);
+    }
+
+    public void withdraw(BigDecimal amount) {
+        this.balance = this.balance.subtract(amount);
     }
 }

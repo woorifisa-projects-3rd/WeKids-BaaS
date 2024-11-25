@@ -18,7 +18,7 @@ public class BankMemberCreateRequest {
     @NotNull
     private LocalDate birthday;
     @NotBlank
-    @Size(min = 13, max = 13)
+    @Size(min = 14, max = 14)
     private String residentRegistrationNumber;
     @NotNull
     @Positive

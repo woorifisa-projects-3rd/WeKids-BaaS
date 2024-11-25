@@ -5,6 +5,8 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import java.time.format.DateTimeParseException;
+
 import static com.wekids.baas.exception.ErrorCode.INVALID_INPUT;
 
 @RestControllerAdvice
@@ -22,5 +24,11 @@ public class GlobalExceptionHandler {
             MethodArgumentNotValidException exception) {
         return ResponseEntity.status(INVALID_INPUT.getStatus())
                 .body(ErrorResponse.of(exception.getBindingResult().getFieldErrors(), INVALID_INPUT));
+    }
+
+    @ExceptionHandler(DateTimeParseException.class)
+    public ResponseEntity<ErrorResponse> handleParseError(DateTimeParseException exception) {
+        return ResponseEntity.status(INVALID_INPUT.getStatus())
+                .body(ErrorResponse.of(INVALID_INPUT, exception.getMessage()));
     }
 }

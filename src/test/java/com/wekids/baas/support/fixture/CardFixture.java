@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
 public class CardFixture {
     private Long id;
     @Builder.Default
-    private String cardNumber = "5159541234567890";
+    private String cardNumber = "5159-5412-3456-7890";
     @Builder.Default
     private LocalDate validThru = LocalDate.now().plusYears(5);
     @Builder.Default

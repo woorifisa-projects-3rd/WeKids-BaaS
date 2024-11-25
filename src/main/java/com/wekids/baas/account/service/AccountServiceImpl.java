@@ -1,12 +1,12 @@
 package com.wekids.baas.account.service;
 
 import com.wekids.baas.account.domain.Account;
-import com.wekids.baas.account.domain.enums.AccountState;
 import com.wekids.baas.account.dto.request.AccountCreateRequest;
 import com.wekids.baas.account.dto.response.AccountCreateResponse;
 import com.wekids.baas.account.dto.response.MemberAccountGetResponse;
 import com.wekids.baas.account.repository.AccountRepository;
 import com.wekids.baas.bankMember.domain.BankMember;
+import com.wekids.baas.bankMember.domain.enums.BankMemberState;
 import com.wekids.baas.bankMember.repository.BankMemberRepository;
 import com.wekids.baas.exception.BaasException;
 import com.wekids.baas.exception.ErrorCode;
@@ -39,7 +39,7 @@ public class AccountServiceImpl implements AccountService {
         String password = accountCreateRequest.getPassword();
         LocalDateTime expireDate = LocalDateTime.of(9999, 12, 31, 23, 59, 59);
 
-        Account account = Account.of(accountNumber, password, expireDate, AccountState.ACTIVE, product, bankMember);
+        Account account = Account.createNewAccount(accountNumber, password, expireDate, product, bankMember);
 
         Account newAccount = accountRepository.save(account);
 
@@ -56,17 +56,29 @@ public class AccountServiceImpl implements AccountService {
     private String createAccountNumber() {
         StringBuilder accountNumber = new StringBuilder("1002");
 
-        long millis = System.currentTimeMillis() % 1_000_000_000L;
+        String millis = String.valueOf(System.currentTimeMillis()).substring(4, 13);
         accountNumber.append(millis);
+
+        accountNumber.insert(4, '-').insert(8, '-');
 
         return accountNumber.toString();
     }
 
     private Product getProduct(Long productId) {
-        return productRepository.findById(productId).orElseThrow(() -> new BaasException(ErrorCode.PRODUCT_NOT_FOUND, "계좌 상품 아이디: " + productId));
+        Product product = productRepository.findById(productId).orElseThrow(() -> new BaasException(ErrorCode.PRODUCT_NOT_FOUND, "계좌 상품 아이디: " + productId));
+
+        LocalDateTime now = LocalDateTime.now();
+
+        if(product.getStartDate().isAfter(now) || product.getEndDate().isBefore(now) && product.getEndDate().isEqual(now)) throw new BaasException(ErrorCode.INVALID_PRODUCT, "계좌 상품 아이디: " + productId);
+
+        return product;
     }
 
     private BankMember getBankMember(Long bankMemberId) {
-        return bankMemberRepository.findById(bankMemberId).orElseThrow(() -> new BaasException(ErrorCode.BANK_MEMBER_NOT_FOUND, "은행 고객 아이디: " + bankMemberId));
+        BankMember bankMember = bankMemberRepository.findById(bankMemberId).orElseThrow(() -> new BaasException(ErrorCode.BANK_MEMBER_NOT_FOUND, "은행 고객 아이디: " + bankMemberId));
+
+        if(bankMember.getState() == BankMemberState.INACTIVE) throw new BaasException(ErrorCode.INACTIVE_BANK_MEMBER, "은행 고객 아이디: " + bankMemberId);
+
+        return bankMember;
     }
 }

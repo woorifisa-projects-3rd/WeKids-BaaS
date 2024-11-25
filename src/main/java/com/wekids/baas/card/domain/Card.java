@@ -36,8 +36,10 @@ public class Card extends BaseTime {
     @Column(nullable = false)
     private String password;
 
-    @Column(nullable = false, columnDefinition = "VARCHAR(255) DEFAULT 'ACTIVE'")
-    private CardState state;
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    @Builder.Default
+    private CardState state = CardState.ACTIVE;
 
     private LocalDateTime inactiveDate;
 
@@ -48,13 +50,12 @@ public class Card extends BaseTime {
     @JoinColumn(name = "account_id", nullable = false)
     private Account account;
 
-    public static Card of(String cardNumber, LocalDate validThru, String cvc, String bankMemberName, String password, Account account) {
+    public static Card createNewCard(String cardNumber, LocalDate validThru, String cvc, String bankMemberName, String password, Account account) {
         return Card.builder()
                 .cardNumber(cardNumber)
                 .validThru(validThru)
                 .cvc(cvc)
                 .bankMemberName(bankMemberName)
-                .state(CardState.ACTIVE)
                 .password(password)
                 .newDate(LocalDateTime.now())
                 .account(account)
