@@ -12,7 +12,7 @@ import java.util.stream.Collectors;
 
 @Getter
 @Builder
-public class TransactionGetResponse {
+public class TransactionResponse {
     private String title;
     private AccountTransactionType type;
     private Long amount;
@@ -22,8 +22,8 @@ public class TransactionGetResponse {
     private CurrencyCode currencyCode;
     private LocalDateTime transactionDate;
 
-    public static TransactionGetResponse from(AccountTransaction accountTransaction) {
-        return TransactionGetResponse.builder()
+    public static TransactionResponse from(AccountTransaction accountTransaction) {
+        return TransactionResponse.builder()
                 .title(accountTransaction.getTitle())
                 .type(accountTransaction.getType())
                 .amount(accountTransaction.getAmount().longValue())
@@ -35,7 +35,7 @@ public class TransactionGetResponse {
                 .build();
     }
 
-    public static List<TransactionGetResponse> from(List<AccountTransaction> accountTransactions) {
+    public static List<TransactionResponse> from(List<AccountTransaction> accountTransactions) {
         return accountTransactions.stream()
                 .map(accountTransaction -> from(accountTransaction))
                 .collect(Collectors.toList());
