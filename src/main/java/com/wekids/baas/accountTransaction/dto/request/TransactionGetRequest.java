@@ -15,7 +15,6 @@ public class TransactionGetRequest {
     @Size(min = 15, max = 15)
     private String accountNumber;
     @PastOrPresent
-
     @Builder.Default
     private LocalDateTime start = LocalDateTime.now().minusMonths(3);
     @Builder.Default
