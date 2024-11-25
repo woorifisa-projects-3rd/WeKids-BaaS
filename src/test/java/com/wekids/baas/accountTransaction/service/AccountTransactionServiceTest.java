@@ -8,7 +8,7 @@ import com.wekids.baas.accountTransaction.domain.enums.AccountTransactionType;
 import com.wekids.baas.accountTransaction.dto.request.AccountTransactionRequestType;
 import com.wekids.baas.accountTransaction.dto.request.TransactionGetRequest;
 import com.wekids.baas.accountTransaction.dto.request.TransferRequest;
-import com.wekids.baas.accountTransaction.dto.response.TransactionGetResponse;
+import com.wekids.baas.accountTransaction.dto.response.TransactionResponse;
 import com.wekids.baas.accountTransaction.repository.AccountTransactionRepository;
 import com.wekids.baas.exception.BaasException;
 import com.wekids.baas.exception.ErrorCode;
@@ -196,20 +196,20 @@ class AccountTransactionServiceTest {
             when(accountRepository.findByAccountNumber(accountNumber)).thenReturn(Optional.of(account));
             when(accountTransactionRepository.findAccountTransactionsByCondition(accountNumber, start, end, accountTransactionType, pageRequest)).thenReturn(accountTransactions);
 
-            List<TransactionGetResponse> transactionList = accountTransactionService.getTransactionList(transactionGetRequest);
+            List<TransactionResponse> transactionList = accountTransactionService.getTransactionList(transactionGetRequest);
 
             assertEquals(10, transactionList.size());
             for (int i = 0; i < 10; i++) {
                 AccountTransaction accountTransaction = accountTransactions.get(i);
-                TransactionGetResponse transactionGetResponse = transactionList.get(i);
-                assertEquals(accountTransaction.getTitle(), transactionGetResponse.getTitle());
-                assertEquals(accountTransaction.getType(), transactionGetResponse.getType());
-                assertEquals(accountTransaction.getAmount().longValue(), transactionGetResponse.getAmount());
-                assertEquals(accountTransaction.getBalance().longValue(), transactionGetResponse.getBalance());
-                assertEquals(accountTransaction.getSender(), transactionGetResponse.getSender());
-                assertEquals(accountTransaction.getReceiver(), transactionGetResponse.getReceiver());
-                assertEquals(accountTransaction.getCurrencyCode(), transactionGetResponse.getCurrencyCode());
-                assertEquals(accountTransaction.getTransactionDate(), transactionGetResponse.getTransactionDate());
+                TransactionResponse transactionResponse = transactionList.get(i);
+                assertEquals(accountTransaction.getTitle(), transactionResponse.getTitle());
+                assertEquals(accountTransaction.getType(), transactionResponse.getType());
+                assertEquals(accountTransaction.getAmount().longValue(), transactionResponse.getAmount());
+                assertEquals(accountTransaction.getBalance().longValue(), transactionResponse.getBalance());
+                assertEquals(accountTransaction.getSender(), transactionResponse.getSender());
+                assertEquals(accountTransaction.getReceiver(), transactionResponse.getReceiver());
+                assertEquals(accountTransaction.getCurrencyCode(), transactionResponse.getCurrencyCode());
+                assertEquals(accountTransaction.getTransactionDate(), transactionResponse.getTransactionDate());
             }
 
             verify(accountRepository, times(1)).findByAccountNumber(accountNumber);

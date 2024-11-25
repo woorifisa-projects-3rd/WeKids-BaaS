@@ -2,12 +2,13 @@ package com.wekids.baas.accountTransaction.service;
 
 import com.wekids.baas.accountTransaction.dto.request.TransactionGetRequest;
 import com.wekids.baas.accountTransaction.dto.request.TransferRequest;
-import com.wekids.baas.accountTransaction.dto.response.TransactionGetResponse;
+import com.wekids.baas.accountTransaction.dto.response.TransactionResponse;
+import com.wekids.baas.accountTransaction.dto.response.TransferResponse;
 
 import java.util.List;
 
 public interface AccountTransactionService {
-    void transfer(TransferRequest transferRequest);
+    TransferResponse transfer(TransferRequest transferRequest);
 
-    List<TransactionGetResponse> getTransactionList(TransactionGetRequest transactionGetRequest);
+    List<TransactionResponse> getTransactionList(TransactionGetRequest transactionGetRequest);
 }

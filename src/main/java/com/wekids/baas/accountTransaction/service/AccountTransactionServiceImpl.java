@@ -9,7 +9,8 @@ import com.wekids.baas.accountTransaction.domain.enums.CurrencyCode;
 import com.wekids.baas.accountTransaction.dto.request.AccountTransactionRequestType;
 import com.wekids.baas.accountTransaction.dto.request.TransactionGetRequest;
 import com.wekids.baas.accountTransaction.dto.request.TransferRequest;
-import com.wekids.baas.accountTransaction.dto.response.TransactionGetResponse;
+import com.wekids.baas.accountTransaction.dto.response.TransactionResponse;
+import com.wekids.baas.accountTransaction.dto.response.TransferResponse;
 import com.wekids.baas.accountTransaction.repository.AccountTransactionRepository;
 import com.wekids.baas.bankMember.domain.BankMember;
 import com.wekids.baas.exception.BaasException;
@@ -22,7 +23,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.util.List;
 
 @Service
@@ -35,7 +35,7 @@ public class AccountTransactionServiceImpl implements AccountTransactionService{
 
     @Override
     @Transactional
-    public void transfer(TransferRequest transferRequest) {
+    public TransferResponse transfer(TransferRequest transferRequest) {
         Account senderAccount = getAccount(transferRequest.getSenderAccountNumber());
         Account receiverAccount = getAccount(transferRequest.getReceiverAccountNumber());
         BigDecimal amount = transferRequest.getAmount();
@@ -47,13 +47,15 @@ public class AccountTransactionServiceImpl implements AccountTransactionService{
 
         LocalDateTime now = LocalDateTime.now();
 
-        withdraw(senderAccount, amount, sender, receiver, now);
+        AccountTransaction withdraw = withdraw(senderAccount, amount, sender, receiver, now);
 
-        deposit(receiverAccount, amount, sender, receiver, now);
+        AccountTransaction deposit = deposit(receiverAccount, amount, sender, receiver, now);
+
+        return TransferResponse.of(TransactionResponse.from(withdraw), TransactionResponse.from(deposit));
     }
 
     @Override
-    public List<TransactionGetResponse> getTransactionList(TransactionGetRequest transactionGetRequest) {
+    public List<TransactionResponse> getTransactionList(TransactionGetRequest transactionGetRequest) {
         String accountNumber = transactionGetRequest.getAccountNumber();
 
         validateAccountNumber(accountNumber);
@@ -69,7 +71,7 @@ public class AccountTransactionServiceImpl implements AccountTransactionService{
 
         List<AccountTransaction> accountTransactions = accountTransactionRepository.findAccountTransactionsByCondition(accountNumber, start, end, type, pageRequest);
 
-        return TransactionGetResponse.from(accountTransactions);
+        return TransactionResponse.from(accountTransactions);
     }
 
     private void validateDateCondition(LocalDateTime start, LocalDateTime end) {
@@ -102,15 +104,15 @@ public class AccountTransactionServiceImpl implements AccountTransactionService{
         return account;
     }
 
-    private void deposit(Account receiverAccount, BigDecimal amount, BankMember sender, BankMember receiver, LocalDateTime now) {
+    private AccountTransaction deposit(Account receiverAccount, BigDecimal amount, BankMember sender, BankMember receiver, LocalDateTime now) {
         receiverAccount.deposit(amount);
         AccountTransaction receiverTransaction = AccountTransaction.createNewAccountTransaction(sender.getName(), AccountTransactionType.DEPOSIT, amount, receiverAccount.getBalance(), sender.getName(), receiver.getName(), now, CurrencyCode.KRW, receiverAccount);
-        accountTransactionRepository.save(receiverTransaction);
+        return accountTransactionRepository.save(receiverTransaction);
     }
 
-    private void withdraw(Account senderAccount, BigDecimal amount, BankMember sender, BankMember receiver, LocalDateTime now) {
+    private AccountTransaction withdraw(Account senderAccount, BigDecimal amount, BankMember sender, BankMember receiver, LocalDateTime now) {
         senderAccount.withdraw(amount);
         AccountTransaction senderTransaction = AccountTransaction.createNewAccountTransaction(receiver.getName(), AccountTransactionType.WITHDRAW, amount.negate(), senderAccount.getBalance(), sender.getName(), receiver.getName(), now, CurrencyCode.KRW, senderAccount);
-        accountTransactionRepository.save(senderTransaction);
+        return accountTransactionRepository.save(senderTransaction);
     }
 }
