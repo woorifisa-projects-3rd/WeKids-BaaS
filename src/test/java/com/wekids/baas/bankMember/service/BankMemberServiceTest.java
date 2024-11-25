@@ -42,7 +42,6 @@ class BankMemberServiceTest {
                 .name(name)
                 .birthday(birthday)
                 .residentRegistrationNumber(residentRegistrationNumber)
-                .baasMemberId(baasMemberId)
                 .build();
 
         BaasMember baasMember = BaasMemberFixture.builder().build().baasMember();
@@ -73,7 +72,6 @@ class BankMemberServiceTest {
                 .name(name)
                 .birthday(birthday)
                 .residentRegistrationNumber(residentRegistrationNumber)
-                .baasMemberId(baasMemberId)
                 .build();
 
         when(bankMemberRepository.findBankMemberByResidentRegistrationNumber(residentRegistrationNumber)).thenReturn(Optional.empty());
@@ -99,7 +97,6 @@ class BankMemberServiceTest {
                 .name(name)
                 .birthday(birthday)
                 .residentRegistrationNumber(residentRegistrationNumber)
-                .baasMemberId(baasMemberId)
                 .build();
 
         BankMember bankMember = BankMemberFixture.builder().build().bankMember();

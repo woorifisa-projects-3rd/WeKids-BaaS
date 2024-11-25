@@ -20,8 +20,4 @@ public class BankMemberCreateRequest {
     @NotBlank
     @Size(min = 14, max = 14)
     private String residentRegistrationNumber;
-    @NotNull
-    @Positive
-    private Long baasMemberId;
-
 }

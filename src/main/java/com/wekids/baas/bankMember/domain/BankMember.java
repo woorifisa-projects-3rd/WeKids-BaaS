@@ -1,6 +1,5 @@
 package com.wekids.baas.bankMember.domain;
 
-import com.wekids.baas.baasMember.domain.BaasMember;
 import com.wekids.baas.bankMember.domain.enums.BankMemberState;
 import com.wekids.baas.common.entity.BaseTime;
 import jakarta.persistence.*;
@@ -34,16 +33,11 @@ public class BankMember extends BaseTime {
     @Builder.Default
     private BankMemberState state = BankMemberState.ACTIVE;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "baas_member_id", nullable = false)
-    private BaasMember baasMember;
-
-    public static BankMember createNewBankMember(String name, LocalDate birthday, String residentRegistrationNumber, BaasMember baasMember) {
+    public static BankMember createNewBankMember(String name, LocalDate birthday, String residentRegistrationNumber) {
         return BankMember.builder()
                 .name(name)
                 .birthday(birthday)
                 .residentRegistrationNumber(residentRegistrationNumber)
-                .baasMember(baasMember)
                 .build();
     }
 }
