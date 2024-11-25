@@ -149,28 +149,24 @@ class AccountTransactionServiceTest {
     @Nested
     class getTransactionListTest {
         String accountNumber;
-        LocalDate start;
-        LocalDate end;
+        LocalDateTime start;
+        LocalDateTime end;
         AccountTransactionRequestType type;
         Integer page;
         Integer size;
         TransactionGetRequest transactionGetRequest;
-        LocalDateTime startTime;
-        LocalDateTime endTime;
         AccountTransactionType accountTransactionType;
         PageRequest pageRequest;
 
         @BeforeEach
         void setUp() {
             accountNumber = "1002123456789";
-            start = LocalDate.of(2024, 11, 20);
-            end = LocalDate.of(2024, 11, 30);
+            start = LocalDateTime.of(LocalDate.of(2024, 11, 20), LocalTime.MIN);
+            end = LocalDateTime.of(LocalDate.of(2024, 11, 30), LocalTime.MAX);
             type = AccountTransactionRequestType.ALL;
             page = 0;
             size = 5;
 
-            startTime = LocalDateTime.of(start, LocalTime.MIN);
-            endTime = LocalDateTime.of(end, LocalTime.MAX);
             accountTransactionType = type.equals(AccountTransactionRequestType.ALL) ? null : AccountTransactionType.valueOf(type.name());
             pageRequest = PageRequest.of(page, size);
 
@@ -186,8 +182,6 @@ class AccountTransactionServiceTest {
 
         @Test
         void 거래_내역_조회_성공() {
-            LocalDateTime startTime = LocalDateTime.of(start, LocalTime.MIN);
-            LocalDateTime endTime = LocalDateTime.of(end, LocalTime.MAX);
             AccountTransactionType accountTransactionType = type.equals(AccountTransactionRequestType.ALL) ? null : AccountTransactionType.valueOf(type.name());
 
             List<AccountTransaction> accountTransactions = new ArrayList<>();
@@ -200,7 +194,7 @@ class AccountTransactionServiceTest {
             Account account = AccountFixture.builder().id(1L).build().account();
 
             when(accountRepository.findByAccountNumber(accountNumber)).thenReturn(Optional.of(account));
-            when(accountTransactionRepository.findAccountTransactionsByCondition(accountNumber, startTime, endTime, accountTransactionType, pageRequest)).thenReturn(accountTransactions);
+            when(accountTransactionRepository.findAccountTransactionsByCondition(accountNumber, start, end, accountTransactionType, pageRequest)).thenReturn(accountTransactions);
 
             List<TransactionGetResponse> transactionList = accountTransactionService.getTransactionList(transactionGetRequest);
 
@@ -219,7 +213,7 @@ class AccountTransactionServiceTest {
             }
 
             verify(accountRepository, times(1)).findByAccountNumber(accountNumber);
-            verify(accountTransactionRepository, times(1)).findAccountTransactionsByCondition(accountNumber, startTime, endTime, accountTransactionType, pageRequest);
+            verify(accountTransactionRepository, times(1)).findAccountTransactionsByCondition(accountNumber, start, end, accountTransactionType, pageRequest);
         }
 
         @Test
@@ -250,8 +244,7 @@ class AccountTransactionServiceTest {
 
         @Test
         void start가_end_보다_미래인_경우() {
-            start = LocalDate.of(2024, 12, 31);
-            startTime = LocalDateTime.of(start, LocalTime.MIN);
+            start = LocalDateTime.of(LocalDate.of(2024, 12, 31), LocalTime.MIN);
             transactionGetRequest.setStart(start);
 
             Account account = AccountFixture.builder().id(1L).build().account();
@@ -261,7 +254,7 @@ class AccountTransactionServiceTest {
             BaasException baasException = assertThrows(BaasException.class, () -> accountTransactionService.getTransactionList(transactionGetRequest));
 
             assertEquals(ErrorCode.START_IS_AFTER_END, baasException.getErrorCode());
-            assertTrue(baasException.getMessage().equals("시작날짜: " + startTime + " 끝날짜: " + endTime));
+            assertTrue(baasException.getMessage().equals("시작날짜: " + start + " 끝날짜: " + end));
 
             verify(accountRepository, times(1)).findByAccountNumber(accountNumber);
         }

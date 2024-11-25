@@ -58,8 +58,8 @@ public class AccountTransactionServiceImpl implements AccountTransactionService{
 
         validateAccountNumber(accountNumber);
 
-        LocalDateTime start = LocalDateTime.of(transactionGetRequest.getStart(), LocalTime.MIN);
-        LocalDateTime end = LocalDateTime.of(transactionGetRequest.getEnd(), LocalTime.MAX);
+        LocalDateTime start = transactionGetRequest.getStart();
+        LocalDateTime end = transactionGetRequest.getEnd();
 
         validateDateCondition(start, end);
 
