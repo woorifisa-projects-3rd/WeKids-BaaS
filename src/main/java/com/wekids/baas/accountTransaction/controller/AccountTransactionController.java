@@ -2,7 +2,8 @@ package com.wekids.baas.accountTransaction.controller;
 
 import com.wekids.baas.accountTransaction.dto.request.TransactionGetRequest;
 import com.wekids.baas.accountTransaction.dto.request.TransferRequest;
-import com.wekids.baas.accountTransaction.dto.response.TransactionGetResponse;
+import com.wekids.baas.accountTransaction.dto.response.TransactionResponse;
+import com.wekids.baas.accountTransaction.dto.response.TransferResponse;
 import com.wekids.baas.accountTransaction.service.AccountTransactionService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -19,16 +20,16 @@ public class AccountTransactionController {
     private final AccountTransactionService accountTransactionService;
 
     @PostMapping("/transactions")
-    public ResponseEntity<Void> transfer(@RequestBody @Valid TransferRequest transferRequest) {
-        accountTransactionService.transfer(transferRequest);
+    public ResponseEntity<TransferResponse> transfer(@RequestBody @Valid TransferRequest transferRequest) {
+        TransferResponse response = accountTransactionService.transfer(transferRequest);
 
-        return ResponseEntity.status(HttpStatus.CREATED).build();
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
     @PostMapping("/getTransactions")
-    public ResponseEntity<List<TransactionGetResponse>> getTransactionList(@RequestBody @Valid TransactionGetRequest transactionGetRequest) {
-        List<TransactionGetResponse> result = accountTransactionService.getTransactionList(transactionGetRequest);
-        return ResponseEntity.ok(result);
+    public ResponseEntity<List<TransactionResponse>> getTransactionList(@RequestBody @Valid TransactionGetRequest transactionGetRequest) {
+        List<TransactionResponse> response = accountTransactionService.getTransactionList(transactionGetRequest);
+        return ResponseEntity.ok(response);
     }
 
 }
