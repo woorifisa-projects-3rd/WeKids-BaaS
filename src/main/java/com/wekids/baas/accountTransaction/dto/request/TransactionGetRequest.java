@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 public class TransactionGetRequest {
     @NotBlank
-    @Size(min = 15, max = 15)
+    @Pattern(regexp = "^\\d{4}-\\d{3}-\\d{6}$")
     private String accountNumber;
     @PastOrPresent
     @Builder.Default

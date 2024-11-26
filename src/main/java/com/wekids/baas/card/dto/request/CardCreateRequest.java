@@ -1,9 +1,6 @@
 package com.wekids.baas.card.dto.request;
 
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Positive;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.*;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -11,13 +8,12 @@ import lombok.Getter;
 @Builder
 public class CardCreateRequest {
     @NotBlank
-    @Size(min = 15, max = 15)
+    @Pattern(regexp = "^\\d{4}-\\d{3}-\\d{6}$")
     private String accountNumber;
     @NotNull
     @Positive
     private Long bankMemberId;
     @NotBlank
-    @Size(min = 4, max = 4)
+    @Pattern(regexp = "^\\d{4}")
     private String password;
-
 }

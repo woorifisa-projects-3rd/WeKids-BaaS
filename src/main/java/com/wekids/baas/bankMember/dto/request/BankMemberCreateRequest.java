@@ -1,9 +1,6 @@
 package com.wekids.baas.bankMember.dto.request;
 
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Positive;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.*;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -18,6 +15,6 @@ public class BankMemberCreateRequest {
     @NotNull
     private LocalDate birthday;
     @NotBlank
-    @Size(min = 14, max = 14)
+    @Pattern(regexp = "^\\d{6}-\\d{7}$")
     private String residentRegistrationNumber;
 }
