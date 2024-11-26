@@ -31,7 +31,6 @@ public class BankMemberFixture {
                 .birthday(birthday)
                 .residentRegistrationNumber(residentRegistrationNumber)
                 .state(state)
-                .baasMember(baasMember)
                 .build();
     }
 
