@@ -11,6 +11,6 @@ import java.util.Optional;
 public interface AccountRepository extends JpaRepository<Account, Long> {
     Optional<Account> findByAccountNumber(String accountNumber);
 
-    @Query("SELECT a FROM Account a JOIN FETCH a.bankMember bm JOIN bm.baasMember WHERE a.bankMember.id = :bankMemberId AND bm.baasMember.id = :baasMemberId")
+    @Query("SELECT a FROM Account a JOIN FETCH a.bankMember bm JOIN Registration r on bm.id = r.bankMember.id WHERE a.bankMember.id = :bankMemberId AND r.baasMember.id = :baasMemberId")
     List<Account> findAccountsByBankMemberIdAndBaasMemberId(@Param("bankMemberId") Long bankMemberId, @Param("baasMemberId") Long baasMemberId);
 }

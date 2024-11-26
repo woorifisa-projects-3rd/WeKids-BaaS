@@ -4,7 +4,7 @@ import com.wekids.baas.baasMember.domain.BaasMember;
 import com.wekids.baas.baasMember.repository.BaasMemberRepository;
 import com.wekids.baas.bankMember.domain.BankMember;
 import com.wekids.baas.bankMember.dto.request.BankMemberCreateRequest;
-import com.wekids.baas.bankMember.dto.response.BankMemberCreateResponse;
+import com.wekids.baas.bankMember.dto.response.BankMemberIdResponse;
 import com.wekids.baas.bankMember.repository.BankMemberRepository;
 import com.wekids.baas.exception.BaasException;
 import com.wekids.baas.exception.ErrorCode;
@@ -42,7 +42,6 @@ class BankMemberServiceTest {
                 .name(name)
                 .birthday(birthday)
                 .residentRegistrationNumber(residentRegistrationNumber)
-                .baasMemberId(baasMemberId)
                 .build();
 
         BaasMember baasMember = BaasMemberFixture.builder().build().baasMember();
@@ -52,7 +51,7 @@ class BankMemberServiceTest {
         when(baasMemberRepository.findById(baasMemberId)).thenReturn(Optional.of(baasMember));
         when(bankMemberRepository.save(any(BankMember.class))).thenReturn(bankMember);
 
-        BankMemberCreateResponse bankMemberCreateResponse = bankMemberService.createBankMember(bankMemberCreateRequest);
+        BankMemberIdResponse bankMemberCreateResponse = bankMemberService.createBankMember(bankMemberCreateRequest);
 
         assertNotNull(bankMemberCreateResponse);
         assertEquals(bankMember.getId(), bankMemberCreateResponse.getBankMemberId());
@@ -73,7 +72,6 @@ class BankMemberServiceTest {
                 .name(name)
                 .birthday(birthday)
                 .residentRegistrationNumber(residentRegistrationNumber)
-                .baasMemberId(baasMemberId)
                 .build();
 
         when(bankMemberRepository.findBankMemberByResidentRegistrationNumber(residentRegistrationNumber)).thenReturn(Optional.empty());
@@ -99,7 +97,6 @@ class BankMemberServiceTest {
                 .name(name)
                 .birthday(birthday)
                 .residentRegistrationNumber(residentRegistrationNumber)
-                .baasMemberId(baasMemberId)
                 .build();
 
         BankMember bankMember = BankMemberFixture.builder().build().bankMember();

@@ -1,8 +1,10 @@
 package com.wekids.baas.bankMember.service;
 
 import com.wekids.baas.bankMember.dto.request.BankMemberCreateRequest;
-import com.wekids.baas.bankMember.dto.response.BankMemberCreateResponse;
+import com.wekids.baas.bankMember.dto.request.BankMemberIdGetRequest;
+import com.wekids.baas.bankMember.dto.response.BankMemberIdResponse;
 
 public interface BankMemberService {
-    BankMemberCreateResponse createBankMember(BankMemberCreateRequest bankMemberCreateRequest);
+    BankMemberIdResponse createBankMember(BankMemberCreateRequest bankMemberCreateRequest);
+    BankMemberIdResponse getBankMemberId(BankMemberIdGetRequest bankMemberIdGetRequest);
 }

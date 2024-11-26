@@ -19,7 +19,8 @@ public enum ErrorCode {
     SENDER_AND_RECEIVER_SAME(BAD_REQUEST, "보내는 분과 받는 분이 같습니다."),
     START_IS_AFTER_END(BAD_REQUEST, "시작 날짜가 끝 날짜보다 과거여야 합니다."),
     INVALID_PRODUCT(BAD_REQUEST, "유효하지 않은 계좌 상품입니다."),
-    INACTIVE_BANK_MEMBER(BAD_REQUEST, "비활성 고객입니다.");
+    INACTIVE_BANK_MEMBER(BAD_REQUEST, "비활성 고객입니다."),
+    REGISTRATION_DUPLICATED(BAD_REQUEST, "이미 등록된 서비스입니다.");
 
     private final HttpStatus status;
     private final String message;

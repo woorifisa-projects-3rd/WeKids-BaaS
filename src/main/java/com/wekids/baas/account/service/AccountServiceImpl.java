@@ -2,6 +2,7 @@ package com.wekids.baas.account.service;
 
 import com.wekids.baas.account.domain.Account;
 import com.wekids.baas.account.dto.request.AccountCreateRequest;
+import com.wekids.baas.account.dto.request.MemberAccountGetRequest;
 import com.wekids.baas.account.dto.response.AccountCreateResponse;
 import com.wekids.baas.account.dto.response.MemberAccountGetResponse;
 import com.wekids.baas.account.repository.AccountRepository;
@@ -51,6 +52,16 @@ public class AccountServiceImpl implements AccountService {
         List<Account> memberAccounts = accountRepository.findAccountsByBankMemberIdAndBaasMemberId(bankMemberId, baasMemberId);
 
         return MemberAccountGetResponse.from(memberAccounts);
+    }
+
+    @Override
+    public MemberAccountGetResponse getMemberAccount(MemberAccountGetRequest memberAccountGetRequest) {
+        Account account = getAccount(memberAccountGetRequest.getAccountNumber());
+        return MemberAccountGetResponse.from(account);
+    }
+
+    private Account getAccount(String accountNumber) {
+        return accountRepository.findByAccountNumber(accountNumber).orElseThrow(() -> new BaasException(ErrorCode.ACCOUNT_NOT_FOUND, "계좌 번호: " + accountNumber));
     }
 
     private String createAccountNumber() {

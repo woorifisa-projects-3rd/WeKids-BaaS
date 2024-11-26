@@ -1,10 +1,10 @@
 package com.wekids.baas.bankMember.service;
 
-import com.wekids.baas.baasMember.domain.BaasMember;
-import com.wekids.baas.baasMember.repository.BaasMemberRepository;
 import com.wekids.baas.bankMember.domain.BankMember;
+import com.wekids.baas.bankMember.domain.enums.BankMemberState;
 import com.wekids.baas.bankMember.dto.request.BankMemberCreateRequest;
-import com.wekids.baas.bankMember.dto.response.BankMemberCreateResponse;
+import com.wekids.baas.bankMember.dto.request.BankMemberIdGetRequest;
+import com.wekids.baas.bankMember.dto.response.BankMemberIdResponse;
 import com.wekids.baas.bankMember.repository.BankMemberRepository;
 import com.wekids.baas.exception.BaasException;
 import com.wekids.baas.exception.ErrorCode;
@@ -19,23 +19,40 @@ import java.util.Optional;
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
 @Slf4j
-public class BankMemberServiceImpl implements BankMemberService{
+public class BankMemberServiceImpl implements BankMemberService {
     private final BankMemberRepository bankMemberRepository;
-    private final BaasMemberRepository baasMemberRepository;
-
 
     @Override
     @Transactional
-    public BankMemberCreateResponse createBankMember(BankMemberCreateRequest bankMemberCreateRequest) {
+    public BankMemberIdResponse createBankMember(BankMemberCreateRequest bankMemberCreateRequest) {
         validateNewBankMember(bankMemberCreateRequest);
 
-        BaasMember baasMember = getBaasMember(bankMemberCreateRequest.getBaasMemberId());
-
-        BankMember bankMember = BankMember.createNewBankMember(bankMemberCreateRequest.getName(), bankMemberCreateRequest.getBirthday(), bankMemberCreateRequest.getResidentRegistrationNumber(), baasMember);
+        BankMember bankMember = BankMember.createNewBankMember(bankMemberCreateRequest.getName(), bankMemberCreateRequest.getBirthday(), bankMemberCreateRequest.getResidentRegistrationNumber());
 
         BankMember savedBankMember = bankMemberRepository.save(bankMember);
 
-        return BankMemberCreateResponse.of(savedBankMember.getId());
+        return BankMemberIdResponse.of(savedBankMember.getId());
+    }
+
+    @Override
+    public BankMemberIdResponse getBankMemberId(BankMemberIdGetRequest bankMemberIdGetRequest) {
+        BankMember bankMember = getBankMember(bankMemberIdGetRequest.getResidentRegistrationNumber());
+
+        validateBankMember(bankMember);
+
+        return BankMemberIdResponse.of(bankMember.getId());
+    }
+
+    private void validateBankMember(BankMember bankMember) {
+        if(bankMember.getState().equals(BankMemberState.INACTIVE)) throw new BaasException(ErrorCode.INACTIVE_BANK_MEMBER, "은행 고객 아이디: " + bankMember.getId());
+    }
+
+    private BankMember getBankMember(String residentRegistrationNumber) {
+        String maskingResidentRegistrationNumber = new StringBuilder(residentRegistrationNumber)
+                .replace(7, 13, "*")
+                .toString();
+        
+        return bankMemberRepository.findBankMemberByResidentRegistrationNumber(residentRegistrationNumber).orElseThrow(() -> new BaasException(ErrorCode.BANK_MEMBER_NOT_FOUND, "주민등록번호: " + maskingResidentRegistrationNumber));
     }
 
     private void validateNewBankMember(BankMemberCreateRequest bankMemberCreateRequest) {
@@ -43,13 +60,8 @@ public class BankMemberServiceImpl implements BankMemberService{
 
         boolean isNewBankMember = bankMember.isEmpty();
 
-        if(!isNewBankMember) {
+        if (!isNewBankMember) {
             throw new BaasException(ErrorCode.BANK_MEMBER_DUPLICATED, "생성 요청된 고객명: " + bankMemberCreateRequest.getName() + ", 조회된 고객명: " + bankMember.get().getName());
         }
-    }
-
-
-    private BaasMember getBaasMember(Long baasMemberId) {
-        return baasMemberRepository.findById(baasMemberId).orElseThrow(() -> new BaasException(ErrorCode.BAAS_MEMBER_NOT_FOUND, "BaaS 고객 아이디 : " + baasMemberId));
     }
 }
