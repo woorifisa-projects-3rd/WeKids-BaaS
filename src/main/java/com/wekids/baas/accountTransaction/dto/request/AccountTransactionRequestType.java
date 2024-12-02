@@ -13,7 +13,7 @@ import java.util.stream.Stream;
 public enum AccountTransactionRequestType {
     ALL,
     DEPOSIT,
-    WITHDRAW;
+    WITHDRAWAL;
 
     @JsonCreator
     public static AccountTransactionRequestType parsing(String value) {
