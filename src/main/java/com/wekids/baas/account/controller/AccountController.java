@@ -1,8 +1,10 @@
 package com.wekids.baas.account.controller;
 
 import com.wekids.baas.account.dto.request.AccountCreateRequest;
+import com.wekids.baas.account.dto.request.AccountStateChangeRequest;
 import com.wekids.baas.account.dto.request.MemberAccountGetRequest;
 import com.wekids.baas.account.dto.response.AccountCreateResponse;
+import com.wekids.baas.account.dto.response.AccountStateChangeResponse;
 import com.wekids.baas.account.dto.response.MemberAccountGetResponse;
 import com.wekids.baas.account.service.AccountService;
 import jakarta.validation.Valid;
@@ -35,6 +37,12 @@ public class AccountController {
     @PostMapping("/getAccounts")
     public ResponseEntity<MemberAccountGetResponse> getMemberAccount(@RequestBody @Valid MemberAccountGetRequest memberAccountGetRequest) {
         MemberAccountGetResponse response = accountService.getMemberAccount(memberAccountGetRequest);
+        return ResponseEntity.ok(response);
+    }
+
+    @PostMapping("/accounts/state")
+    public ResponseEntity<AccountStateChangeResponse> changeAccountState(@RequestBody @Valid AccountStateChangeRequest request){
+        AccountStateChangeResponse response = accountService.changeAccountState(request);
         return ResponseEntity.ok(response);
     }
 }
