@@ -8,10 +8,10 @@ import java.time.LocalDateTime;
 
 @AllArgsConstructor
 @Getter
-public class CardStateResponse {
+public class CardStateChangeResponse {
     private LocalDateTime inactiveDate;
 
-    public static CardStateResponse from(LocalDateTime inactiveDate){
-        return new CardStateResponse(inactiveDate);
+    public static CardStateChangeResponse from(LocalDateTime inactiveDate){
+        return new CardStateChangeResponse(inactiveDate);
     }
 }

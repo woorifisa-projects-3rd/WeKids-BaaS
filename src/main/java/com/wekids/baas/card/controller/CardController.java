@@ -1,9 +1,9 @@
 package com.wekids.baas.card.controller;
 
 import com.wekids.baas.card.dto.request.CardCreateRequest;
-import com.wekids.baas.card.dto.request.CardStateRequest;
+import com.wekids.baas.card.dto.request.CardStateChangeRequest;
 import com.wekids.baas.card.dto.response.CardCreateResponse;
-import com.wekids.baas.card.dto.response.CardStateResponse;
+import com.wekids.baas.card.dto.response.CardStateChangeResponse;
 import com.wekids.baas.card.service.CardService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -28,9 +28,9 @@ public class CardController {
     }
 
     @PostMapping("/state")
-    public ResponseEntity<CardStateResponse> changeCardState(@RequestBody @Valid CardStateRequest request){
-        CardStateResponse cardStateResponse = cardService.changeCardState(request);
+    public ResponseEntity<CardStateChangeResponse> changeCardState(@RequestBody @Valid CardStateChangeRequest request){
+        CardStateChangeResponse cardStateChangeResponse = cardService.changeCardState(request);
 
-        return ResponseEntity.status(HttpStatus.CREATED).body(cardStateResponse);
+        return ResponseEntity.status(HttpStatus.CREATED).body(cardStateChangeResponse);
     }
 }

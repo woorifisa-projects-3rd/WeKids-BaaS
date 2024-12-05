@@ -5,7 +5,7 @@ import jakarta.validation.constraints.*;
 import lombok.Getter;
 
 @Getter
-public class CardStateRequest {
+public class CardStateChangeRequest {
     @NotNull
     private Long bankMemberId;
 
