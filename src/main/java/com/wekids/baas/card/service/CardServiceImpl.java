@@ -92,7 +92,7 @@ public class CardServiceImpl implements CardService{
                 new BaasException(ErrorCode.CARD_NOT_FOUNT, cardNumber + ", " + cvc + "은 존재하지 않습니다."));
 
         if(card.getValidThru().isBefore(LocalDate.now())){
-            throw new BaasException(ErrorCode.CARD_EXPIRE,  cardNumber + ", " + cvc + "은 말료된 카드입니다");
+            throw new BaasException(ErrorCode.CARD_EXPIRE,  cardNumber + ", " + cvc + "은 만료된 카드입니다");
         }
 
         return card;
