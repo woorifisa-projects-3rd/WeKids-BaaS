@@ -65,10 +65,13 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
+    @Transactional
     public AccountStateChangeResponse changeAccountState(AccountStateChangeRequest request) {
         validateRegistration(request);
 
         Account account = getAccount(request.getAccountNumber());
+
+        validatePassword(account, request);
 
         account.updateAccountState(request.getState());
 
@@ -78,6 +81,12 @@ public class AccountServiceImpl implements AccountService {
     private void validateRegistration(AccountStateChangeRequest request){
         registrationRepository.findByBaasMember_IdAndBankMember_Id(request.getBaasMemberId(), request.getBankMemberId())
                 .orElseThrow(()->new BaasException(ErrorCode.REGISTRATION_NOT_FOUND, String.format("%d과 %d은 등록되지 않았습니다.", request.getBaasMemberId() , request.getBankMemberId())));
+    }
+
+    private void validatePassword(Account account, AccountStateChangeRequest request){
+        if(!account.getPassword().equals(request.getPassword())){
+            throw new BaasException(ErrorCode.INCORRECT_PASSWORD, account.getAccountNumber() + "의 계좌 번호는 없는 번호입니다.");
+        }
     }
 
     private Account getAccount(String accountNumber) {

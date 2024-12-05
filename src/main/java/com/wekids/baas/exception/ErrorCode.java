@@ -22,6 +22,7 @@ public enum ErrorCode {
     REGISTRATION_NOT_FOUND(NOT_FOUND, "등록된 서비스가 아닙니다."),
     CARD_NOT_FOUNT(NOT_FOUND, "존재하지 않은 카드입니다."),
     CARD_EXPIRE(INTERNAL_SERVER_ERROR, "만료된 카드입니다."),
+    INCORRECT_PASSWORD(INTERNAL_SERVER_ERROR, "비밀번호가 일치 하지 않습니다."),
     REGISTRATION_DUPLICATED(BAD_REQUEST, "이미 등록된 서비스입니다.");
 
     private final HttpStatus status;

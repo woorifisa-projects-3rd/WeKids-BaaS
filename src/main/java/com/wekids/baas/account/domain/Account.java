@@ -78,7 +78,7 @@ public class Account extends BaseTime {
     }
 
     public void updateAccountState(AccountState accountState){
-        if(accountState.equals(CardState.INACTIVE)){
+        if(accountState.equals(AccountState.INACTIVE)){
             this.inactiveDate = LocalDateTime.now();
         }
 
