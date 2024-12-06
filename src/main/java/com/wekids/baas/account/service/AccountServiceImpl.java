@@ -2,8 +2,10 @@ package com.wekids.baas.account.service;
 
 import com.wekids.baas.account.domain.Account;
 import com.wekids.baas.account.dto.request.AccountCreateRequest;
+import com.wekids.baas.account.dto.request.AccountStateChangeRequest;
 import com.wekids.baas.account.dto.request.MemberAccountGetRequest;
 import com.wekids.baas.account.dto.response.AccountCreateResponse;
+import com.wekids.baas.account.dto.response.AccountStateChangeResponse;
 import com.wekids.baas.account.dto.response.MemberAccountGetResponse;
 import com.wekids.baas.account.repository.AccountRepository;
 import com.wekids.baas.bankMember.domain.BankMember;
@@ -13,6 +15,7 @@ import com.wekids.baas.exception.BaasException;
 import com.wekids.baas.exception.ErrorCode;
 import com.wekids.baas.product.domain.Product;
 import com.wekids.baas.product.repository.ProductRepository;
+import com.wekids.baas.registration.repository.RegistrationRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -29,6 +32,7 @@ public class AccountServiceImpl implements AccountService {
     private final AccountRepository accountRepository;
     private final BankMemberRepository bankMemberRepository;
     private final ProductRepository productRepository;
+    private final RegistrationRepository registrationRepository;
 
     @Override
     @Transactional
@@ -58,6 +62,31 @@ public class AccountServiceImpl implements AccountService {
     public MemberAccountGetResponse getMemberAccount(MemberAccountGetRequest memberAccountGetRequest) {
         Account account = getAccount(memberAccountGetRequest.getAccountNumber());
         return MemberAccountGetResponse.from(account);
+    }
+
+    @Override
+    @Transactional
+    public AccountStateChangeResponse changeAccountState(AccountStateChangeRequest request) {
+        validateRegistration(request);
+
+        Account account = getAccount(request.getAccountNumber());
+
+        validatePassword(account, request);
+
+        account.updateAccountState(request.getState());
+
+        return AccountStateChangeResponse.from(account.getInactiveDate());
+    }
+
+    private void validateRegistration(AccountStateChangeRequest request){
+        registrationRepository.findByBaasMember_IdAndBankMember_Id(request.getBaasMemberId(), request.getBankMemberId())
+                .orElseThrow(()->new BaasException(ErrorCode.REGISTRATION_NOT_FOUND, String.format("%d과 %d은 등록되지 않았습니다.", request.getBaasMemberId() , request.getBankMemberId())));
+    }
+
+    private void validatePassword(Account account, AccountStateChangeRequest request){
+        if(!account.getPassword().equals(request.getPassword())){
+            throw new BaasException(ErrorCode.INCORRECT_PASSWORD, account.getAccountNumber() + "의 계좌 번호는 없는 번호입니다.");
+        }
     }
 
     private Account getAccount(String accountNumber) {
@@ -92,4 +121,6 @@ public class AccountServiceImpl implements AccountService {
 
         return bankMember;
     }
+
+
 }

@@ -3,6 +3,7 @@ package com.wekids.baas.account.domain;
 import com.wekids.baas.account.domain.enums.AccountState;
 import com.wekids.baas.account.domain.enums.BankCode;
 import com.wekids.baas.bankMember.domain.BankMember;
+import com.wekids.baas.card.domain.enums.CardState;
 import com.wekids.baas.common.entity.BaseTime;
 import com.wekids.baas.product.domain.Product;
 import jakarta.persistence.*;
@@ -74,5 +75,13 @@ public class Account extends BaseTime {
 
     public void withdraw(BigDecimal amount) {
         this.balance = this.balance.subtract(amount);
+    }
+
+    public void updateAccountState(AccountState accountState){
+        if(accountState.equals(AccountState.INACTIVE)){
+            this.inactiveDate = LocalDateTime.now();
+        }
+
+        this.state = accountState;
     }
 }
