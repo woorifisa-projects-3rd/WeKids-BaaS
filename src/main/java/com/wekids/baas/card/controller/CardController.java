@@ -31,6 +31,6 @@ public class CardController {
     public ResponseEntity<CardStateChangeResponse> changeCardState(@RequestBody @Valid CardStateChangeRequest request){
         CardStateChangeResponse cardStateChangeResponse = cardService.changeCardState(request);
 
-        return ResponseEntity.status(HttpStatus.CREATED).body(cardStateChangeResponse);
+        return ResponseEntity.status(HttpStatus.OK).body(cardStateChangeResponse);
     }
 }
