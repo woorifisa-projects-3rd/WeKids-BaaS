@@ -7,7 +7,7 @@ import lombok.Getter;
 @AllArgsConstructor
 public enum AccountTransactionType {
     DEPOSIT("입금"),
-    WITHDRAW("출금");
+    WITHDRAWAL("출금");
 
     private final String name;
 }

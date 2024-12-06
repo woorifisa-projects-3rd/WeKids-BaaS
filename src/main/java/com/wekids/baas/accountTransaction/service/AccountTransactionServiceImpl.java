@@ -112,7 +112,7 @@ public class AccountTransactionServiceImpl implements AccountTransactionService{
 
     private AccountTransaction withdraw(Account senderAccount, BigDecimal amount, BankMember sender, BankMember receiver, LocalDateTime now) {
         senderAccount.withdraw(amount);
-        AccountTransaction senderTransaction = AccountTransaction.createNewAccountTransaction(receiver.getName(), AccountTransactionType.WITHDRAW, amount.negate(), senderAccount.getBalance(), sender.getName(), receiver.getName(), now, CurrencyCode.KRW, senderAccount);
+        AccountTransaction senderTransaction = AccountTransaction.createNewAccountTransaction(receiver.getName(), AccountTransactionType.WITHDRAWAL, amount.negate(), senderAccount.getBalance(), sender.getName(), receiver.getName(), now, CurrencyCode.KRW, senderAccount);
         return accountTransactionRepository.save(senderTransaction);
     }
 }
