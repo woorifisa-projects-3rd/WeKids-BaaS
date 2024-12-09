@@ -9,11 +9,14 @@ import com.wekids.baas.accountTransaction.dto.request.AccountTransactionRequestT
 import com.wekids.baas.accountTransaction.dto.request.TransactionGetRequest;
 import com.wekids.baas.accountTransaction.dto.request.TransferRequest;
 import com.wekids.baas.accountTransaction.dto.response.TransactionResponse;
+import com.wekids.baas.accountTransaction.dto.response.TransferResponse;
 import com.wekids.baas.accountTransaction.repository.AccountTransactionRepository;
+import com.wekids.baas.bankMember.domain.BankMember;
 import com.wekids.baas.exception.BaasException;
 import com.wekids.baas.exception.ErrorCode;
 import com.wekids.baas.support.fixture.AccountFixture;
 import com.wekids.baas.support.fixture.AccountTransactionFixture;
+import com.wekids.baas.support.fixture.BankMemberFixture;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -65,16 +68,35 @@ class AccountTransactionServiceTest {
 
         @Test
         void 이체_성공() {
-            Account senderAccount = AccountFixture.builder().accountNumber(senderAccountNumber).balance(BigDecimal.TEN).build().account();
-            Account receiverAccount = AccountFixture.builder().accountNumber(receiverAccountNumber).balance(BigDecimal.ZERO).build().account();
+            // Arrange: Mock 데이터 준비
+            String senderAccountNumber = "12345";
+            String receiverAccountNumber = "67890";
+            BigDecimal transferAmount = BigDecimal.TEN;
 
-            when(accountRepository.findByAccountNumber(senderAccountNumber)).thenReturn(Optional.of(senderAccount));
-            when(accountRepository.findByAccountNumber(receiverAccountNumber)).thenReturn(Optional.of(receiverAccount));
+            BankMember sender = BankMemberFixture.builder().name("Sender").build().bankMember();
 
-            accountTransactionService.transfer(transferRequest);
+            BankMember receiver = BankMemberFixture.builder().name("Receiver").build().bankMember();
 
-            assertEquals(BigDecimal.ZERO, senderAccount.getBalance()); // 송신자의 잔액이 감소
-            assertEquals(BigDecimal.TEN, receiverAccount.getBalance()); // 수신자의 잔액이 증가
+
+            Account senderAccount = AccountFixture.builder().accountNumber(senderAccountNumber).balance(BigDecimal.TEN).bankMember(sender).build().account();
+
+            Account receiverAccount = AccountFixture.builder().accountNumber(receiverAccountNumber).balance(BigDecimal.ZERO).bankMember(receiver).build().account();
+
+            when(accountRepository.findByAccountNumber(senderAccountNumber))
+                    .thenReturn(Optional.of(senderAccount));
+            when(accountRepository.findByAccountNumber(receiverAccountNumber))
+                    .thenReturn(Optional.of(receiverAccount));
+            when(accountTransactionRepository.save(any(AccountTransaction.class)))
+                    .thenAnswer(invocation -> invocation.getArgument(0));
+
+            TransferRequest transferRequest = TransferRequest.builder().senderAccountNumber(senderAccountNumber).receiverAccountNumber(receiverAccountNumber).amount(transferAmount).build();
+
+            // Act: transfer 메서드 호출
+            TransferResponse response = accountTransactionService.transfer(transferRequest);
+
+            // Assert: 결과 검증
+            assertEquals(BigDecimal.ZERO, senderAccount.getBalance()); // 송신자의 잔액 감소
+            assertEquals(BigDecimal.TEN, receiverAccount.getBalance()); // 수신자의 잔액 증가
 
             verify(accountRepository, times(1)).findByAccountNumber(senderAccountNumber);
             verify(accountRepository, times(1)).findByAccountNumber(receiverAccountNumber);

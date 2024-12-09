@@ -16,7 +16,7 @@ public class AccountTransactionFixture {
     @Builder.Default
     private String title = "문방구";
     @Builder.Default
-    private AccountTransactionType type = AccountTransactionType.WITHDRAW;
+    private AccountTransactionType type = AccountTransactionType.WITHDRAWAL;
     @Builder.Default
     private BigDecimal amount = BigDecimal.valueOf(2000);
     @Builder.Default
